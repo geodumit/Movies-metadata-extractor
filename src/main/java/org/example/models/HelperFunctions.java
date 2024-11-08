@@ -14,6 +14,8 @@ import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
@@ -63,14 +65,14 @@ public class HelperFunctions {
 
 
     public static String getCurrentDate(String pattern){
-        LocalDateTime currentDate = LocalDateTime.now();
-        logger.info("Got current date: {}", currentDate);
+        ZonedDateTime currentDate = ZonedDateTime.now(ZoneOffset.UTC);
+        logger.info("Got current UTC date: {}", currentDate);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
 
         String formattedDate = currentDate.format(formatter);
 
-        logger.info("Formatted date: {}", formattedDate);
+        logger.info("Formatted UTC date: {}", formattedDate);
         return formattedDate;
     }
 

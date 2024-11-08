@@ -3,13 +3,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.models.*;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
-
-import static org.example.models.HelperFunctions.getCurrentDate;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
@@ -59,17 +56,24 @@ public class Main {
                 .filter(movie -> movie.getPopularity() > moviesPopularity)
                 .toList();
 
-
-
         logger.info("Total movies with a popularity higher than {}: {}", moviesPopularity, popularMovies.size());
 
-        List<String> listOfMovies = new java.util.ArrayList<>(List.of());
+        List<String> listOfMovies = new ArrayList<>(List.of());
+
+        // get ids of movies in the database
+        List<String> idsInDB = DatabaseFunctions.getIds();
+
+        // filter only the ids that are not in the database
+        List<Movie> popularMoviesNotInDB = popularMovies.stream()
+                .filter(movie -> !idsInDB.contains(String.valueOf(movie.getId())))
+                .toList();
 
         int errors = 0;
         int error_limit = 5;
 
-        for (int i = 0; i < popularMovies.size(); i++) {
-            int currentId = popularMovies.get(i).getId();
+
+        for (int i = 0; i < popularMoviesNotInDB.size(); i++) {
+            int currentId = popularMoviesNotInDB.get(i).getId();
 
             TMDBAPI tmdbapi = new TMDBAPI(apiKey);
             String movie_body = tmdbapi.getDetails(currentId);
@@ -81,38 +85,27 @@ public class Main {
 
             if (errors > error_limit) {
                 logger.error("Could not get more than {} consecutive details for movies", error_limit);
+                System.exit(10);
             }
 
-            System.out.println(movie_body);
+
             listOfMovies.add(movie_body);
 
             if (i % csvLimit == 0 && i != 0) {
-                String csvDate = getCurrentDate("yyyyMMddHHmmss");
-                String csvFile = "movies_csv_" + csvDate + ".csv";
-                Path csvFilePath = csvDirectory.resolve(csvFile);
-
-                StringBuilder moviesData = new StringBuilder(MovieDetailsCSV.getColumns());
-                moviesData.append("\n");
+                List<MovieDetailsCSV> movieDataList = new ArrayList<>(List.of());
                 for (String movie: listOfMovies) {
                     MovieDetailsCSV movieDetailsCSV = new MovieDetailsCSV();
                     movieDetailsCSV.initializeMovie(movie);
-                    moviesData.append(movieDetailsCSV.getCSVRow()).append("\n");
-                }
-                try {
-                    FileWriter writer = new FileWriter(csvFilePath.toString(), true);
-                    writer.write(String.valueOf(moviesData));
-                    writer.close();
-                    System.out.println("File written successfully!");
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+                    movieDataList.add(movieDetailsCSV);
                 }
 
-                System.exit(0);
-                listOfMovies = new java.util.ArrayList<>(List.of());
+                DatabaseFunctions.insertRows(movieDataList);
+                
+                listOfMovies = new ArrayList<>(List.of());
             }
 
             logger.info("iteration: {}", i);
-            errors = 0;
         }
     }
 }

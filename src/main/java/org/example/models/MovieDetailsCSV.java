@@ -32,6 +32,110 @@ public class MovieDetailsCSV {
     String voteAverage;
     String vote_count;
 
+    public String getAdult() {
+        return adult;
+    }
+
+    public String getBackdropPath() {
+        return backdropPath;
+    }
+
+    public String getCollection() {
+        return collection;
+    }
+
+    public String getBudget() {
+        return budget;
+    }
+
+    public String getGenres() {
+        return genres;
+    }
+
+    public String getHomepage() {
+        return homepage;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public String getOriginCountry() {
+        return originCountry;
+    }
+
+    public String getOriginalLanguage() {
+        return originalLanguage;
+    }
+
+    public String getOriginalTitle() {
+        return originalTitle;
+    }
+
+    public String getOverview() {
+        return overview;
+    }
+
+    public String getPopularity() {
+        return popularity;
+    }
+
+    public String getPosterPath() {
+        return posterPath;
+    }
+
+    public String getProductionCompanies() {
+        return productionCompanies;
+    }
+
+    public String getProductionCountries() {
+        return productionCountries;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public String getRevenue() {
+        return revenue;
+    }
+
+    public String getRuntime() {
+        return runtime;
+    }
+
+    public String getSpokenLanguages() {
+        return spokenLanguages;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getTagline() {
+        return tagline;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getVideo() {
+        return video;
+    }
+
+    public String getVoteAverage() {
+        return voteAverage;
+    }
+
+    public String getVote_count() {
+        return vote_count;
+    }
+
     public void initializeMovie(String jsonString) {
         JSONObject movie = new JSONObject(jsonString);
         adult = checkBoolean(movie, "adult");
