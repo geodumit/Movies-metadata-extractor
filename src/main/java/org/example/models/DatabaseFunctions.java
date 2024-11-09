@@ -10,8 +10,8 @@ public class DatabaseFunctions {
     private static final String PASSWORD = "password";
 
 
-    public static void insertRows(List<MovieDetailsCSV> movieDataList) {
-        String sql = "INSERT INTO raw_metadata (" +
+    public static void insertRowsDetails(List<MovieDetailsCSV> movieDataList) {
+        String sql = "INSERT INTO raw_details_metadata (" +
                 "adult, " +
                 "backdropPath, " +
                 "collection, " +
@@ -73,23 +73,48 @@ public class DatabaseFunctions {
                 pstmt.setString(25, movieData.getVoteAverage());
                 pstmt.setString(26, movieData.getVote_count());
 
-                // Add the row to the batch
                 pstmt.addBatch();
             }
 
             // Execute the batch of inserts
             int[] rowsAffected = pstmt.executeBatch();
-            System.out.println("Batch insert completed. Rows affected: " + rowsAffected.length);
+            System.out.println("Batch insert completed to raw_details_metadata. Rows affected: " + rowsAffected.length);
 
         } catch (SQLException e) {
             System.out.println("Error during batch insert: " + e.getMessage());
         }
     }
 
+    public static void insertRowsCredits(List<MovieCredits> movieDataList) {
+        String sql = "INSERT INTO raw_credits_metadata (" +
+                "id, " +
+                "_cast, " +
+                "crew " +
+                ") " +
+                "VALUES (?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            for (MovieCredits movieData : movieDataList) {
+                pstmt.setString(1, movieData.getId());
+                pstmt.setString(2, movieData.getCast());
+                pstmt.setString(3, movieData.getCrew());
+
+                pstmt.addBatch();
+            }
+
+            int[] rowsAffected = pstmt.executeBatch();
+            System.out.println("Batch insert completed to raw_credits_metadata. Rows affected: " + rowsAffected.length);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static List<String> getIds(){
         List<String> idList = new ArrayList<>();
 
-        String query = "SELECT id FROM raw_metadata";
+        String query = "SELECT id FROM raw_details_metadata";
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              Statement statement = connection.createStatement();

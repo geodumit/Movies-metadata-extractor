@@ -34,7 +34,8 @@ public class TMDBAPI {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
-                logger.debug("Response: {}", response.body());
+//                logger.debug("Response: {}", response.body());
+                logger.info("details ID: {} ok", id);
             } else {
                 logger.warn("Request failed with status code: {}", response.statusCode());
                 return null;
@@ -47,5 +48,34 @@ public class TMDBAPI {
         return response.body();
     }
 
+    public String getCredits(int id){
+        String URL = "https://api.themoviedb.org/3/movie/" + id + "/credits";
+        HttpResponse<String> response;
+
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(URL))
+                    .header("Accept", "application/json")
+                    .header("Authorization", token)
+                    .build();
+
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+//                logger.debug("Response: {}", response.body());
+                logger.info("credits ID: {} ok", id);
+            } else {
+                logger.warn("Request failed with status code: {}", response.statusCode());
+                return null;
+            }
+        } catch (Exception e) {
+            logger.warn("Something went wrong with the request {}", e.getMessage());
+            return null;
+        }
+
+        return response.body();
+    }
 
 }

@@ -58,7 +58,8 @@ public class Main {
 
         logger.info("Total movies with a popularity higher than {}: {}", moviesPopularity, popularMovies.size());
 
-        List<String> listOfMovies = new ArrayList<>(List.of());
+        List<String> listOfMovieDetails = new ArrayList<>(List.of());
+        List<String> listofMovieCredits = new ArrayList<>(List.of());
 
         // get ids of movies in the database
         List<String> idsInDB = DatabaseFunctions.getIds();
@@ -76,33 +77,51 @@ public class Main {
             int currentId = popularMoviesNotInDB.get(i).getId();
 
             TMDBAPI tmdbapi = new TMDBAPI(apiKey);
-            String movie_body = tmdbapi.getDetails(currentId);
-            if (movie_body == null) {
+            String movieBodyDetails = tmdbapi.getDetails(currentId);
+            if (movieBodyDetails == null) {
                 errors += 1;
                 logger.warn("Could not get details for {}", currentId);
                 continue;
             }
+
+            String movieBodyCredits = tmdbapi.getCredits(currentId);
+            if (movieBodyCredits == null) {
+                errors += 1;
+                logger.warn("Could not get details for {}", currentId);
+                continue;
+            }
+
 
             if (errors > error_limit) {
                 logger.error("Could not get more than {} consecutive details for movies", error_limit);
                 System.exit(10);
             }
 
-
-            listOfMovies.add(movie_body);
+            listOfMovieDetails.add(movieBodyDetails);
+            listofMovieCredits.add(movieBodyCredits);
 
             if (i % csvLimit == 0 && i != 0) {
                 List<MovieDetailsCSV> movieDataList = new ArrayList<>(List.of());
-                for (String movie: listOfMovies) {
+                for (String movie: listOfMovieDetails) {
                     MovieDetailsCSV movieDetailsCSV = new MovieDetailsCSV();
                     movieDetailsCSV.initializeMovie(movie);
 
                     movieDataList.add(movieDetailsCSV);
                 }
 
-                DatabaseFunctions.insertRows(movieDataList);
-                
-                listOfMovies = new ArrayList<>(List.of());
+                List<MovieCredits> movieCreditsList = new ArrayList<>(List.of());
+                for (String movie: listofMovieCredits) {
+                    MovieCredits movieCredits = new MovieCredits();
+                    movieCredits.initializeMovie(movie);
+
+                    movieCreditsList.add(movieCredits);
+                }
+
+                DatabaseFunctions.insertRowsDetails(movieDataList);
+                DatabaseFunctions.insertRowsCredits(movieCreditsList);
+
+                listOfMovieDetails = new ArrayList<>(List.of());
+                listofMovieCredits = new ArrayList<>(List.of());
             }
 
             logger.info("iteration: {}", i);
