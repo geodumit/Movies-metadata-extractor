@@ -61,6 +61,11 @@ public class Main {
         List<String> listOfMovieDetails = new ArrayList<>(List.of());
         List<String> listofMovieCredits = new ArrayList<>(List.of());
 
+        boolean databaseInitialized = DatabaseFunctions.initializeDB();
+        if (!databaseInitialized) {
+            System.exit(11);
+        }
+
         // get ids of movies in the database
         List<String> idsInDB = DatabaseFunctions.getIds();
 
@@ -72,6 +77,7 @@ public class Main {
         int errors = 0;
         int error_limit = 5;
 
+        logger.info("Popular movies not in Database: {}", popularMoviesNotInDB.size());
 
         for (int i = 0; i < popularMoviesNotInDB.size(); i++) {
             int currentId = popularMoviesNotInDB.get(i).getId();

@@ -1,14 +1,33 @@
 package org.example.models;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 public class DatabaseFunctions {
-    private static final String URL = "jdbc:postgresql://localhost:5432/moviesMetadata";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "password";
+    private static HikariDataSource dataSource;
 
+    private static final Logger logger = LogManager.getLogger(DatabaseFunctions.class);
+
+    public static boolean initializeDB() {
+        try {
+            HikariConfig config = new HikariConfig("C:\\Users\\gdumi\\IdeaProjects\\Export_movies\\src\\main\\resources\\db.properties");
+            dataSource = new HikariDataSource(config);
+        } catch (Exception e) {
+            logger.error("Database initialization failed: {}", e.getMessage());
+            return false;
+        }
+        return true;
+    }
 
     public static void insertRowsDetails(List<MovieDetailsCSV> movieDataList) {
         String sql = "INSERT INTO raw_details_metadata (" +
@@ -41,7 +60,7 @@ public class DatabaseFunctions {
                 ") " +
                 "VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?,?, ?, ?, ?, ?,?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             // Loop over the list of movie data and add each to the batch
@@ -76,14 +95,15 @@ public class DatabaseFunctions {
                 pstmt.addBatch();
             }
 
-            // Execute the batch of inserts
             int[] rowsAffected = pstmt.executeBatch();
-            System.out.println("Batch insert completed to raw_details_metadata. Rows affected: " + rowsAffected.length);
+            logger.info("Batch insert completed to raw_details_metadata. Rows affected: {}", rowsAffected.length);
 
         } catch (SQLException e) {
-            System.out.println("Error during batch insert: " + e.getMessage());
+            logger.error("Error during batch insert: {}", e.getMessage());
         }
     }
+
+
 
     public static void insertRowsCredits(List<MovieCredits> movieDataList) {
         String sql = "INSERT INTO raw_credits_metadata (" +
@@ -93,7 +113,7 @@ public class DatabaseFunctions {
                 ") " +
                 "VALUES (?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             for (MovieCredits movieData : movieDataList) {
                 pstmt.setString(1, movieData.getId());
@@ -104,10 +124,10 @@ public class DatabaseFunctions {
             }
 
             int[] rowsAffected = pstmt.executeBatch();
-            System.out.println("Batch insert completed to raw_credits_metadata. Rows affected: " + rowsAffected.length);
+            logger.info("Batch insert completed to raw_credits_metadata. Rows affected: {}", rowsAffected.length);
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.error("Error during batch insert: {}", e.getMessage());
         }
     }
 
@@ -116,7 +136,7 @@ public class DatabaseFunctions {
 
         String query = "SELECT id FROM raw_details_metadata";
 
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
 
@@ -125,11 +145,15 @@ public class DatabaseFunctions {
                 idList.add(id);
             }
 
-            System.out.println("IDs from raw_metadata: " + idList);
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Could not get ids from database, exception: {}", e.getMessage());
         }
-        return idList;
+        return idList.isEmpty() ? Collections.emptyList() : idList;
+    }
+
+    public static void closeDataSource() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
     }
 }
