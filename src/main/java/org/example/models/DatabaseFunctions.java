@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.example.data.DatabaseData;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,6 +16,9 @@ import java.util.Properties;
 
 public class DatabaseFunctions {
     private static HikariDataSource dataSource;
+
+    private static final String detailsQuery = buildSql(DatabaseData.getDetailsColumns(), DatabaseData.getDetailsTable());
+    private static final String creditsQuery = buildSql(DatabaseData.getCreditsColumns(), DatabaseData.getCreditsTable());
 
     private static final Logger logger = LogManager.getLogger(DatabaseFunctions.class);
 
@@ -29,39 +33,15 @@ public class DatabaseFunctions {
         return true;
     }
 
-    public static void insertRowsDetails(List<MovieDetailsCSV> movieDataList) {
-        String sql = "INSERT INTO raw_details_metadata (" +
-                "adult, " +
-                "backdropPath, " +
-                "collection, " +
-                "budget, " +
-                "genres, " +
-                "homepage, " +
-                "id, " +
-                "imdbId, " +
-                "originCountry, " +
-                "originalLanguage, " +
-                "originalTitle, " +
-                "overview, " +
-                "popularity, " +
-                "posterPath, " +
-                "productionCompanies, " +
-                "productionCountries, " +
-                "releaseDate, " +
-                "revenue, " +
-                "runtime, " +
-                "spokenLanguages, " +
-                "status, " +
-                "tagline, " +
-                "title, " +
-                "video, " +
-                "voteAverage, " +
-                "vote_count " +
-                ") " +
-                "VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?,?, ?, ?, ?, ?,?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?)";
+    private static String buildSql(String[] tableColumns, String tableName) {
+        String joinedColumns = String.join(", ", tableColumns);
+        String placeholders = String.join(", ", Collections.nCopies(tableColumns.length, "?"));
+        return "INSERT INTO " + tableName + " (" + joinedColumns + ") VALUES (" + placeholders + ")";
+    }
 
+    public static void insertRowsDetails(List<MovieDetailsCSV> movieDataList) {
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(detailsQuery)) {
 
             // Loop over the list of movie data and add each to the batch
             for (MovieDetailsCSV movieData : movieDataList) {
@@ -106,15 +86,8 @@ public class DatabaseFunctions {
 
 
     public static void insertRowsCredits(List<MovieCredits> movieDataList) {
-        String sql = "INSERT INTO raw_credits_metadata (" +
-                "id, " +
-                "_cast, " +
-                "crew " +
-                ") " +
-                "VALUES (?, ?, ?)";
-
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(creditsQuery)) {
             for (MovieCredits movieData : movieDataList) {
                 pstmt.setString(1, movieData.getId());
                 pstmt.setString(2, movieData.getCast());
