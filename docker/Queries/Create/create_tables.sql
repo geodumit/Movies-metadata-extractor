@@ -1,37 +1,37 @@
 CREATE TABLE raw_details_metadata (
     details_id SERIAL PRIMARY KEY,
-	adult VARCHAR(255),
-	backdropPath VARCHAR(255),
-	collection VARCHAR(255),
-	budget VARCHAR(255),
+	adult VARCHAR,
+	backdropPath VARCHAR,
+	collection VARCHAR,
+	budget VARCHAR,
 	genres TEXT,
-	homepage VARCHAR(255),
-	id VARCHAR(255),
-	imdbId VARCHAR(255),
-	originCountry VARCHAR(255),
-	originalLanguage VARCHAR(255),
-	originalTitle VARCHAR(255),
+	homepage VARCHAR,
+	id VARCHAR,
+	imdbId VARCHAR,
+	originCountry VARCHAR,
+	originalLanguage VARCHAR,
+	originalTitle VARCHAR,
 	overview TEXT,
-	popularity VARCHAR(255),
-	posterPath VARCHAR(255),
+	popularity VARCHAR,
+	posterPath VARCHAR,
 	productionCompanies TEXT,
 	productionCountries TEXT,
-	releaseDate VARCHAR(255),
-	revenue VARCHAR(255),
-	runtime VARCHAR(255),
+	releaseDate VARCHAR,
+	revenue VARCHAR,
+	runtime VARCHAR,
 	spokenLanguages TEXT,
-	status VARCHAR(255),
-	tagline VARCHAR(255),
-	title VARCHAR(255),
-	video VARCHAR(255),
-	voteAverage VARCHAR(255),
-	vote_count VARCHAR(255)	,
+	status VARCHAR,
+	tagline VARCHAR,
+	title VARCHAR,
+	video VARCHAR,
+	voteAverage VARCHAR,
+	vote_count VARCHAR	,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE raw_credits_metadata (
 	credits_id SERIAL PRIMARY KEY,
-	id VARCHAR(255),
+	id VARCHAR,
 	_cast TEXT,
 	crew TEXT,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -39,25 +39,25 @@ CREATE TABLE raw_credits_metadata (
 
 CREATE TABLE movies (
     id INT primary key,
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR NOT NULL,
     release_date DATE,
-    backdrop_path VARCHAR(255),
+    backdrop_path VARCHAR,
     budget INT,
-    original_language VARCHAR(255),
+    original_language VARCHAR,
     overview text,
     popularity DECIMAL,
-    poster_path VARCHAR(255),
+    poster_path VARCHAR,
     revenue INT,
     runtime INT,
-    status VARCHAR(255),
-    tagline VARCHAR(255),
+    status VARCHAR,
+    tagline VARCHAR,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE genres (
     id INT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR NOT NULL
 );
 
 create table movie_genres (
@@ -69,8 +69,8 @@ create table movie_genres (
 
 create table production_companies (
 	id INT primary key,
-	name VARCHAR(255),
-	origin_country VARCHAR(255)
+	name VARCHAR,
+	origin_country VARCHAR
 );
 
 create table movie_production_companies (
