@@ -1,8 +1,11 @@
-insert into movies (id, title, release_date, backdrop_path, budget, original_language, overview, popularity, poster_path, revenue, runtime, status, tagline)
-select 
+insert into movies (id, adult , title, original_title, release_date, imdbid, backdrop_path, budget, original_language, overview, popularity, poster_path, revenue, runtime, tagline)
+select
 	cast(id as INT),
+	cast(adult as Boolean),
+	title,
 	originaltitle,
 	TO_DATE(releasedate, 'YYYY-MM-DD'),
+	imdbid,
 	backdroppath,
 	cast(budget as INT),
 	originallanguage,
@@ -11,10 +14,16 @@ select
 	posterpath,
 	cast(revenue as INT),
 	cast(runtime as INT),
-	status,
 	tagline
 from raw_details_metadata
 on conflict (id) do nothing
+
+insert into genres
+select distinct
+	cast(jsonb_array_elements(genres::jsonb)->>'id' AS integer) as id,
+	jsonb_array_elements(genres::jsonb)->>'name' as name
+from
+	raw_details_metadata rdm
 
 insert into movie_genres ( movie_id, genre_id)
 SELECT
@@ -23,10 +32,8 @@ SELECT
 FROM 
     raw_details_metadata;
 
-insert into genres (logo_path, name, id, origin_country)
-SELECT
-	details_id,
-    jsonb_array_elements(productioncompanies::jsonb)->>'logo_path' AS logo_path,
+insert into production_companies (name, id, origin_country)
+select DISTINCT
     jsonb_array_elements(productioncompanies::jsonb)->>'name' AS name,
 	cast(jsonb_array_elements(productioncompanies::jsonb)->>'id' AS integer) as id,
 	jsonb_array_elements(productioncompanies::jsonb)->>'origin_country' AS origin_country

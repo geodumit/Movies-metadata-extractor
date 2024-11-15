@@ -1,5 +1,5 @@
 CREATE TABLE raw_details_metadata (
-    details_id SERIAL PRIMARY KEY,
+    details_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	adult VARCHAR,
 	backdropPath VARCHAR,
 	collection VARCHAR,
@@ -30,7 +30,7 @@ CREATE TABLE raw_details_metadata (
 );
 
 CREATE TABLE raw_credits_metadata (
-	credits_id SERIAL PRIMARY KEY,
+	credits_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	id VARCHAR,
 	_cast TEXT,
 	crew TEXT,
@@ -39,8 +39,11 @@ CREATE TABLE raw_credits_metadata (
 
 CREATE TABLE movies (
     id INT primary key,
-    title VARCHAR NOT NULL,
+    adult boolean,
+    title VARCHAR,
+    original_title VARCHAR,
     release_date DATE,
+    IMDBid INT,
     backdrop_path VARCHAR,
     budget INT,
     original_language VARCHAR,
@@ -49,7 +52,6 @@ CREATE TABLE movies (
     poster_path VARCHAR,
     revenue INT,
     runtime INT,
-    status VARCHAR,
     tagline VARCHAR,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -68,7 +70,7 @@ create table movie_genres (
 );
 
 create table production_companies (
-	id INT primary key,
+	id INT,
 	name VARCHAR,
 	origin_country VARCHAR
 );
