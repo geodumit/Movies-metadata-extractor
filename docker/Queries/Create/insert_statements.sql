@@ -1,3 +1,8 @@
+insert into updated_data
+select cast(id as integer), false , false, false, false, false,false, false, false from raw_details_metadata
+on conflict(movie_id) do nothing
+
+-- Insert data from raw_details_metadata to movies
 insert into movies (id, adult , title, original_title, release_date, imdbid, backdrop_path, budget, original_language, overview, popularity, poster_path, revenue, runtime, tagline)
 select
 	cast(id as INT),
@@ -16,21 +21,43 @@ select
 	cast(runtime as INT),
 	tagline
 from raw_details_metadata
+where cast(id as integer) in
+(select movie_id from updated_data
+where movies_updated = false)
 on conflict (id) do nothing
 
+update updated_data
+set movies_updated = true
+where movie_id in
+(select id from movies)
+
+
+-- Insert data from raw_details_metadata to genres
 insert into genres
 select distinct
 	cast(jsonb_array_elements(genres::jsonb)->>'id' AS integer) as id,
 	jsonb_array_elements(genres::jsonb)->>'name' as name
 from
 	raw_details_metadata rdm
+on conflict(id) do nothing
+
 
 insert into movie_genres ( movie_id, genre_id)
 SELECT
 	cast(id as integer),
 	cast(jsonb_array_elements(genres::jsonb)->>'id' AS integer) as id
 FROM 
-    raw_details_metadata;
+    raw_details_metadata
+where cast(id as integer) in
+(select movie_id from updated_data
+where movie_genres_updated = false)
+
+update updated_data
+set movie_genres_updated = true
+where movie_id in
+(select distinct movie_id from movie_genres)
+
+
 
 insert into production_companies (name, id, origin_country)
 select DISTINCT
@@ -38,7 +65,24 @@ select DISTINCT
 	cast(jsonb_array_elements(productioncompanies::jsonb)->>'id' AS integer) as id,
 	jsonb_array_elements(productioncompanies::jsonb)->>'origin_country' AS origin_country
 FROM 
-    raw_details_metadata;
+    raw_details_metadata
+on conflict(id) do nothing
+
+
+insert into movie_production_companies
+select
+    cast(id as integer),
+	cast(jsonb_array_elements(productioncompanies::jsonb)->>'id' AS integer) as id
+FROM
+    raw_details_metadata
+where cast(id as integer) in
+(select movie_id from updated_data
+where movie_production_companies_updated = false)
+
+update updated_data
+set movie_production_companies_updated = true
+where movie_id in
+(select movie_id from movie_production_companies)
 
 insert into actor_characters (movie_id, actor_id, character)
 select 

@@ -67,7 +67,7 @@ public class Main {
         }
 
         // get ids of movies in the database
-        List<String> idsInDB = DatabaseFunctions.getIds();
+        List<String> idsInDB = DatabaseFunctions.getDetailsIds();
 
         // filter only the ids that are not in the database
         List<Movie> popularMoviesNotInDB = popularMovies.stream()

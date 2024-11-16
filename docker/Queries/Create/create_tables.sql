@@ -1,3 +1,4 @@
+-- Stores the the raw data returned from the details api
 CREATE TABLE raw_details_metadata (
     details_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	adult VARCHAR,
@@ -29,6 +30,7 @@ CREATE TABLE raw_details_metadata (
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Stores the raw data returned from the credits api
 CREATE TABLE raw_credits_metadata (
 	credits_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	id VARCHAR,
@@ -37,6 +39,7 @@ CREATE TABLE raw_credits_metadata (
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Stores the 1:1 data for each movie
 CREATE TABLE movies (
     id INT primary key,
     adult boolean,
@@ -57,11 +60,13 @@ CREATE TABLE movies (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Stores the possible genres
 CREATE TABLE genres (
     id INT PRIMARY KEY,
     name VARCHAR NOT NULL
 );
 
+-- Stores the genres for each movie
 create table movie_genres (
 	movie_id INT,
 	genre_id Int,
@@ -69,12 +74,14 @@ create table movie_genres (
 	foreign key (genre_id) references genres(id)
 );
 
+-- Stores the possible production companies
 create table production_companies (
-	id INT,
+	id INT primary key,
 	name VARCHAR,
 	origin_country VARCHAR
 );
 
+-- Stores the production companies for each movie
 create table movie_production_companies (
 	movie_id INT,
 	production_id Int,
@@ -82,12 +89,14 @@ create table movie_production_companies (
 	foreign key (production_id) references production_companies(id)
 );
 
+-- Stores the characters played by the actors
 create table actor_characters (
 	movie_id INT,
 	actor_id INT,
 	character varchar
 )
 
+-- Stores the actors
 create table actors (
 	id INT primary key,
 	name varchar,
@@ -95,6 +104,7 @@ create table actors (
 	profile_path varchar
 )
 
+-- Stores the crew roles for each movie
 create table crew_roles (
 	movie_id INT,
 	crew_id INT,
@@ -102,9 +112,23 @@ create table crew_roles (
 	job varchar
 )
 
+-- Stores the crew
 create table crew (
 	id int primary key,
 	name varchar,
 	known_for_department varchar,
 	profile_path varchar
+)
+
+-- Stores if data has been updated for each movie id for each table
+create table updated_data (
+	movie_id INT primary key,
+	movies_updated boolean,
+	genres_updated boolean,
+	movie_genres_updated boolean,
+	production_companies_updated boolean,
+	actor_characters_updated boolean,
+	crew_roles_updated boolean,
+	crew_updated boolean,
+	actors_updated boolean
 )

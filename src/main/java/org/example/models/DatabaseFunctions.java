@@ -6,13 +6,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.data.DatabaseData;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 public class DatabaseFunctions {
     private static HikariDataSource dataSource;
@@ -104,10 +101,10 @@ public class DatabaseFunctions {
         }
     }
 
-    public static List<String> getIds(){
+    public static List<String> getDetailsIds(){
         List<String> idList = new ArrayList<>();
 
-        String query = "SELECT id FROM raw_details_metadata";
+        String query = "SELECT id FROM movies";
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
