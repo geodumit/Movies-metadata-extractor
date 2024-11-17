@@ -1,4 +1,6 @@
-package org.example.data;
+package org.example.strings;
+
+import java.util.*;
 
 public class DatabaseData {
     static String[] detailsColumns = {
@@ -16,6 +18,7 @@ public class DatabaseData {
 
     static String detailsTable = "raw_details_metadata";
     static String creditsTable = "raw_credits_metadata";
+
 
     static public String[] getDetailsColumns() {
         return detailsColumns;

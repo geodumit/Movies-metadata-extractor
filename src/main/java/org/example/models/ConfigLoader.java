@@ -14,6 +14,7 @@ public class ConfigLoader {
     private String apiKey;
     private int csvLimit;
     private double moviesPopularity;
+    private String queriesPath;
 
     public int getCsvLimit() {
         return csvLimit;
@@ -25,6 +26,10 @@ public class ConfigLoader {
 
     public String getapiKey() {
         return apiKey;
+    }
+
+    public String getQueriesPath() {
+        return queriesPath;
     }
 
     private static final Logger logger = LogManager.getLogger(ConfigLoader.class);
@@ -61,6 +66,12 @@ public class ConfigLoader {
             moviesPopularity = Double.parseDouble(properties.getProperty("movies.popularity"));
         } catch (NullPointerException | NumberFormatException e) {
             logger.error("movies.popularity doesn't have a valid value, exception: {}", e.getMessage());
+            return false;
+        }
+
+        queriesPath = properties.getProperty(("db.queriesPath"));
+        if (queriesPath == null) {
+            logger.error("db.queriesPath doesn't have a valid value");
             return false;
         }
 

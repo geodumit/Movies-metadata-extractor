@@ -124,11 +124,8 @@ create table crew (
 create table updated_data (
 	movie_id INT primary key,
 	movies_updated boolean,
-	genres_updated boolean,
 	movie_genres_updated boolean,
-	production_companies_updated boolean,
+	movie_production_companies_updated boolean,
 	actor_characters_updated boolean,
-	crew_roles_updated boolean,
-	crew_updated boolean,
-	actors_updated boolean
+	crew_roles_updated boolean
 )

@@ -84,22 +84,43 @@ set movie_production_companies_updated = true
 where movie_id in
 (select movie_id from movie_production_companies)
 
-insert into actor_characters (movie_id, actor_id, character)
-select 
-	cast(id as integer), 
+
+
+insert into actor_characters
+select
+	cast(id as integer),
 	cast(jsonb_array_elements(_cast::jsonb)->>'id' as integer) AS id,
 	jsonb_array_elements(_cast::jsonb)->>'character' AS character
-from 
+from
 	raw_credits_metadata
+where cast(id as integer) in
+(select movie_id from updated_data
+where actor_characters_updated = false)
 
-insert into crew_roles (movie_id, crew_id, department, job)
-select 
-	cast(id as integer) as movie_id, 
+update updated_data
+set actor_characters_updated = true
+where movie_id in
+(select movie_id from actor_characters)
+
+
+
+insert into crew_roles
+select
+	cast(id as integer) as movie_id,
 	cast(jsonb_array_elements(crew::jsonb)->>'id' as integer) AS crew_id,
 	jsonb_array_elements(crew::jsonb)->>'department' AS department,
 	jsonb_array_elements(crew::jsonb)->>'job' AS job
-from 
+from
 	raw_credits_metadata
+where cast(id as integer) in
+(select movie_id from updated_data
+where crew_roles_updated = false)
+
+update updated_data
+set crew_roles_updated = true
+where movie_id in
+(select movie_id from crew_roles)
+
 
 insert into crew (id, name, known_for_department, profile_path)
 select distinct

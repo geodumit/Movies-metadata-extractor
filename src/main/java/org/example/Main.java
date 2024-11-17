@@ -21,6 +21,7 @@ public class Main {
         String apiKey = config.getapiKey();
         int csvLimit = config.getCsvLimit();
         double moviesPopularity = config.getMoviesPopularity();
+        String dbQueriesPath = config.getQueriesPath();
 
         Path downloadedFilesPath = Paths.get("DownloadedFiles");
         Path csvDirectory = Paths.get("MoviesCSV");
