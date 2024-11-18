@@ -141,35 +141,15 @@ public class HelperFunctions {
         return movies;
     }
 
-
-
-    public static void convertJsonToCsv(String jsonString, String outputCsvFilePath) {
-        try (FileWriter writer = new FileWriter(outputCsvFilePath);
-             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
-
-            JSONArray jsonArray = new JSONArray(jsonString);
-
-            if (!jsonArray.isEmpty()) {
-                JSONObject firstObject = jsonArray.getJSONObject(0);
-                Iterator<String> keys = firstObject.keys();
-
-                while (keys.hasNext()) {
-                    csvPrinter.print(keys.next());
-                }
-                csvPrinter.println();
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    for (String key : jsonObject.keySet()) {
-                        csvPrinter.print(jsonObject.get(key));
-                    }
-                    csvPrinter.println();
-                }
-                logger.info("CSV file created successfully at: {}",outputCsvFilePath);
-            }
-
+    public static String readFile(File file){
+        String content;
+        try {
+            Path filePath = Path.of(file.toURI());
+            content = Files.readString(filePath);
         } catch (IOException e) {
-            logger.error("Error writing CSV file: {}", e.getMessage());
+            e.printStackTrace();
+            return null;
         }
+        return content;
     }
 }

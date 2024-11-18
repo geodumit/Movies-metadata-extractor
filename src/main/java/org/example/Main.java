@@ -3,15 +3,35 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.models.*;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args){
+
+        FolderLister folderLister = new FolderLister();
+        File[] queriesDirectory = folderLister.getFiles("C:\\Users\\gdumi\\IdeaProjects\\Export_movies\\docker\\Queries\\Insert");
+
+        Map<String, File[]> queriesFiles = new HashMap<>();
+
+        for (File file: queriesDirectory) {
+            queriesFiles.put(file.getName(), folderLister.getFiles(file));
+        }
+
+        Map<String, String> queries = new HashMap<>();
+        // todo: change it to iterate map
+        for (File file: queriesDirectory) {
+            queries.put(file.getName(), HelperFunctions.readFile(file));
+        }
+        System.out.println(queries);
+
+
+        System.exit(0);
+
 
         ConfigLoader config = new ConfigLoader("C:\\Users\\gdumi\\IdeaProjects\\Export_movies\\src\\main\\resources\\config.properties");
         if (!config.configIsOk()){
