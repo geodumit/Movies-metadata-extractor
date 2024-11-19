@@ -13,26 +13,6 @@ public class Main {
 
     public static void main(String[] args){
 
-        FolderLister folderLister = new FolderLister();
-        File[] queriesDirectory = folderLister.getFiles("C:\\Users\\gdumi\\IdeaProjects\\Export_movies\\docker\\Queries\\Insert");
-
-        Map<String, File[]> queriesFiles = new HashMap<>();
-
-        for (File file: queriesDirectory) {
-            queriesFiles.put(file.getName(), folderLister.getFiles(file));
-        }
-
-        Map<String, String> queries = new HashMap<>();
-        // todo: change it to iterate map
-        for (File file: queriesDirectory) {
-            queries.put(file.getName(), HelperFunctions.readFile(file));
-        }
-        System.out.println(queries);
-
-
-        System.exit(0);
-
-
         ConfigLoader config = new ConfigLoader("C:\\Users\\gdumi\\IdeaProjects\\Export_movies\\src\\main\\resources\\config.properties");
         if (!config.configIsOk()){
             System.exit(3);
@@ -42,6 +22,34 @@ public class Main {
         int csvLimit = config.getCsvLimit();
         double moviesPopularity = config.getMoviesPopularity();
         String dbQueriesPath = config.getQueriesPath();
+
+        FolderLister folderLister = new FolderLister();
+        File[] queriesDirectory = folderLister.getFiles(dbQueriesPath);
+        logger.info("Got " + queriesDirectory.length + " folders");
+        Map<String, File[]> queriesFiles = new HashMap<>();
+
+        for (File file: queriesDirectory) {
+            queriesFiles.put(file.getName(), folderLister.getFiles(file));
+        }
+
+        Map<String, FileQuery> queries = new HashMap<>();
+
+        for (Map.Entry<String, File[]> entry : queriesFiles.entrySet()) {
+            String keyValue = entry.getKey();
+            String insertQuery = null;
+            String updateQuery = null;
+            for (File query: entry.getValue()) {
+                if (query.getName().equals("insert_query.sql")){
+                    insertQuery = HelperFunctions.readFile(query);
+                }
+                if (query.getName().equals("update_query.sql")) {
+                    updateQuery = HelperFunctions.readFile(query);
+                }
+            }
+            FileQuery fileQuery = new FileQuery(keyValue, insertQuery, updateQuery);
+            queries.put(keyValue, fileQuery);
+        }
+
 
         Path downloadedFilesPath = Paths.get("DownloadedFiles");
         Path csvDirectory = Paths.get("MoviesCSV");

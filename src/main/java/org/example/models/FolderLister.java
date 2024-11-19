@@ -26,7 +26,7 @@ public class FolderLister {
             if (files != null) {
                 for (File file : files) {
                     if (file.isDirectory()) {
-                        System.out.println("Folder: " + file.getName());
+                        logger.info("Folder: {}", file.getName());
                     }
                 }
             } else {
