@@ -127,6 +127,16 @@ public class DatabaseFunctions {
         }
     }
 
+    public static void runStaticQuery(String query){
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
 
+            int rowsAffected = statement.executeUpdate(query);
+
+            logger.info("{} rows affected", rowsAffected);
+        } catch (Exception e) {
+            logger.error("Exception occured: {}", e.getMessage());
+        }
+    }
 
 }

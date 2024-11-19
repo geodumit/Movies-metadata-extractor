@@ -22,7 +22,9 @@ public class Main {
         int csvLimit = config.getCsvLimit();
         double moviesPopularity = config.getMoviesPopularity();
         String dbQueriesPath = config.getQueriesPath();
+        String dbUpdateDataQueryPath = config.getUpdatedDataQueryPath();
 
+        String dbUpdatedDataQuery = HelperFunctions.readFile(new File(dbUpdateDataQueryPath));
         FolderLister folderLister = new FolderLister();
         File[] queriesDirectory = folderLister.getFiles(dbQueriesPath);
         logger.info("Got " + queriesDirectory.length + " folders");
@@ -154,6 +156,30 @@ public class Main {
 
                 DatabaseFunctions.insertRowsDetails(movieDataList);
                 DatabaseFunctions.insertRowsCredits(movieCreditsList);
+
+                logger.info("Running update for updated_data table");
+                DatabaseFunctions.runStaticQuery(dbUpdatedDataQuery);
+
+                // todo: must change the order so that there is no error in foreign keys
+                for (Map.Entry<String, FileQuery> entry : queries.entrySet()) {
+                    String keyValue = entry.getKey();
+                    String insertQuery = entry.getValue().getInsertQuery();
+                    String updateQuery = entry.getValue().getUpdateQuery();
+                    logger.info("Running queries for {} table", keyValue);
+                    if (insertQuery != null) {
+                        logger.info("Data insert for table: {}", keyValue);
+                        DatabaseFunctions.runStaticQuery(insertQuery);
+                    } else {
+                        logger.warn("No insert query for {}", keyValue);
+                    }
+
+                    if (updateQuery != null) {
+                        logger.info("Data update for table: {}", keyValue);
+                        DatabaseFunctions.runStaticQuery(updateQuery);
+                    } else {
+                        logger.warn("No update query for {}", keyValue);
+                    }
+                }
 
                 listOfMovieDetails = new ArrayList<>(List.of());
                 listofMovieCredits = new ArrayList<>(List.of());

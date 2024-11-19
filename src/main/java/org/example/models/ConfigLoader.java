@@ -15,6 +15,7 @@ public class ConfigLoader {
     private int csvLimit;
     private double moviesPopularity;
     private String queriesPath;
+    private String updatedDataQueryPath;
 
     public int getCsvLimit() {
         return csvLimit;
@@ -30,6 +31,10 @@ public class ConfigLoader {
 
     public String getQueriesPath() {
         return queriesPath;
+    }
+
+    public String getUpdatedDataQueryPath() {
+        return updatedDataQueryPath;
     }
 
     private static final Logger logger = LogManager.getLogger(ConfigLoader.class);
@@ -72,6 +77,12 @@ public class ConfigLoader {
         queriesPath = properties.getProperty(("db.queriesPath"));
         if (queriesPath == null) {
             logger.error("db.queriesPath doesn't have a valid value");
+            return false;
+        }
+
+        updatedDataQueryPath = properties.getProperty("db.updatedDataQuery");
+        if (updatedDataQueryPath == null) {
+            logger.error("db.updatedDataQuery doesn't have a valid value");
             return false;
         }
 
