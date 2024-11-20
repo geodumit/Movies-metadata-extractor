@@ -9,16 +9,16 @@ public class FolderLister {
 
     private static final Logger logger = LogManager.getLogger(FolderLister.class);
 
-    public File[] getFiles(String directoryPath){
+    public static File[] getFiles(String directoryPath){
         File directory = new File(directoryPath);
         return returnFiles(directory);
     }
 
-    public File[] getFiles(File inputFile){
+    public static File[] getFiles(File inputFile){
         return returnFiles(inputFile);
     }
 
-    public File[] returnFiles(File inputFile){
+    public static File[] returnFiles(File inputFile){
         File[] files;
         if (inputFile.isDirectory()) {
             files = inputFile.listFiles();

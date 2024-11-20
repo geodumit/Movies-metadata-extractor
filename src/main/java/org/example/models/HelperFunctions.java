@@ -19,9 +19,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 
@@ -151,5 +149,56 @@ public class HelperFunctions {
             return null;
         }
         return content;
+    }
+
+    public static Map<String, FileQuery> getQueries(String dbQueriesPath){
+        File[] queriesDirectory = FolderLister.getFiles(dbQueriesPath);
+        logger.info("Got " + queriesDirectory.length + " folders to run before");
+        Map<String, File[]> queriesFiles = new HashMap<>();
+
+        for (File file: queriesDirectory) {
+            queriesFiles.put(file.getName(), FolderLister.getFiles(file));
+        }
+
+        Map<String, FileQuery> queries = new HashMap<>();
+
+        for (Map.Entry<String, File[]> entry : queriesFiles.entrySet()) {
+            String keyValue = entry.getKey();
+            String insertQuery = null;
+            String updateQuery = null;
+            for (File query: entry.getValue()) {
+                if (query.getName().equals("insert_query.sql")){
+                    insertQuery = HelperFunctions.readFile(query);
+                }
+                if (query.getName().equals("update_query.sql")) {
+                    updateQuery = HelperFunctions.readFile(query);
+                }
+            }
+            FileQuery fileQuery = new FileQuery(keyValue, insertQuery, updateQuery);
+            queries.put(keyValue, fileQuery);
+        }
+        return queries;
+    }
+
+    public static void runQueries(Map<String, FileQuery> queries) {
+        for (Map.Entry<String, FileQuery> entry : queries.entrySet()) {
+            String keyValue = entry.getKey();
+            String insertQuery = entry.getValue().getInsertQuery();
+            String updateQuery = entry.getValue().getUpdateQuery();
+            logger.info("Running queries for {} table", keyValue);
+            if (insertQuery != null) {
+                logger.info("Data insert for table: {}", keyValue);
+                DatabaseFunctions.runStaticQuery(insertQuery);
+            } else {
+                logger.warn("No insert query for {}", keyValue);
+            }
+
+            if (updateQuery != null) {
+                logger.info("Data update for table: {}", keyValue);
+                DatabaseFunctions.runStaticQuery(updateQuery);
+            } else {
+                logger.warn("No update query for {}", keyValue);
+            }
+        }
     }
 }
