@@ -1,6 +1,7 @@
 package org.example;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.example.configuration.ConfigLoader;
 import org.example.models.*;
 
 import java.io.File;
@@ -21,22 +22,25 @@ public class Main {
         String apiKey = config.getapiKey();
         int csvLimit = config.getCsvLimit();
         double moviesPopularity = config.getMoviesPopularity();
-        String dbQueriesPath = config.getQueriesPath();
+        String dbBeforeQueriesPath = config.getBeforeQueriesPath();
+        String dbAfterQueriesPath = config.getAfterQueriesPath();
         String dbUpdateDataQueryPath = config.getUpdatedDataQueryPath();
 
         String dbUpdatedDataQuery = HelperFunctions.readFile(new File(dbUpdateDataQueryPath));
         FolderLister folderLister = new FolderLister();
-        File[] queriesDirectory = folderLister.getFiles(dbQueriesPath);
-        logger.info("Got " + queriesDirectory.length + " folders");
-        Map<String, File[]> queriesFiles = new HashMap<>();
 
-        for (File file: queriesDirectory) {
-            queriesFiles.put(file.getName(), folderLister.getFiles(file));
+        // Get queries that must be run before any other query
+        File[] beforeQueriesDirectory = folderLister.getFiles(dbBeforeQueriesPath);
+        logger.info("Got " + beforeQueriesDirectory.length + " folders to run before");
+        Map<String, File[]> beforeQueriesFiles = new HashMap<>();
+
+        for (File file: beforeQueriesDirectory) {
+            beforeQueriesFiles.put(file.getName(), folderLister.getFiles(file));
         }
 
-        Map<String, FileQuery> queries = new HashMap<>();
+        Map<String, FileQuery> beforeQueries = new HashMap<>();
 
-        for (Map.Entry<String, File[]> entry : queriesFiles.entrySet()) {
+        for (Map.Entry<String, File[]> entry : beforeQueriesFiles.entrySet()) {
             String keyValue = entry.getKey();
             String insertQuery = null;
             String updateQuery = null;
@@ -49,8 +53,37 @@ public class Main {
                 }
             }
             FileQuery fileQuery = new FileQuery(keyValue, insertQuery, updateQuery);
-            queries.put(keyValue, fileQuery);
+            beforeQueries.put(keyValue, fileQuery);
         }
+
+
+        // Get queries that must be run after the before queries
+        File[] afterQueriesDirectory = folderLister.getFiles(dbAfterQueriesPath);
+        logger.info("Got " + afterQueriesDirectory.length + " folders to run after");
+        Map<String, File[]> afterQueriesFiles = new HashMap<>();
+
+        for (File file: afterQueriesDirectory) {
+            afterQueriesFiles.put(file.getName(), folderLister.getFiles(file));
+        }
+
+        Map<String, FileQuery> afterQueries = new HashMap<>();
+
+        for (Map.Entry<String, File[]> entry : afterQueriesFiles.entrySet()) {
+            String keyValue = entry.getKey();
+            String insertQuery = null;
+            String updateQuery = null;
+            for (File query: entry.getValue()) {
+                if (query.getName().equals("insert_query.sql")){
+                    insertQuery = HelperFunctions.readFile(query);
+                }
+                if (query.getName().equals("update_query.sql")) {
+                    updateQuery = HelperFunctions.readFile(query);
+                }
+            }
+            FileQuery fileQuery = new FileQuery(keyValue, insertQuery, updateQuery);
+            afterQueries.put(keyValue, fileQuery);
+        }
+
 
 
         Path downloadedFilesPath = Paths.get("DownloadedFiles");
@@ -161,7 +194,27 @@ public class Main {
                 DatabaseFunctions.runStaticQuery(dbUpdatedDataQuery);
 
                 // todo: must change the order so that there is no error in foreign keys
-                for (Map.Entry<String, FileQuery> entry : queries.entrySet()) {
+                for (Map.Entry<String, FileQuery> entry : beforeQueries.entrySet()) {
+                    String keyValue = entry.getKey();
+                    String insertQuery = entry.getValue().getInsertQuery();
+                    String updateQuery = entry.getValue().getUpdateQuery();
+                    logger.info("Running queries for {} table", keyValue);
+                    if (insertQuery != null) {
+                        logger.info("Data insert for table: {}", keyValue);
+                        DatabaseFunctions.runStaticQuery(insertQuery);
+                    } else {
+                        logger.warn("No insert query for {}", keyValue);
+                    }
+
+                    if (updateQuery != null) {
+                        logger.info("Data update for table: {}", keyValue);
+                        DatabaseFunctions.runStaticQuery(updateQuery);
+                    } else {
+                        logger.warn("No update query for {}", keyValue);
+                    }
+                }
+
+                for (Map.Entry<String, FileQuery> entry : afterQueries.entrySet()) {
                     String keyValue = entry.getKey();
                     String insertQuery = entry.getValue().getInsertQuery();
                     String updateQuery = entry.getValue().getUpdateQuery();

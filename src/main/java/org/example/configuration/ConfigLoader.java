@@ -1,4 +1,4 @@
-package org.example.models;
+package org.example.configuration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,8 +14,9 @@ public class ConfigLoader {
     private String apiKey;
     private int csvLimit;
     private double moviesPopularity;
-    private String queriesPath;
+    private String beforeQueriesPath;
     private String updatedDataQueryPath;
+    private String afterQueriesPath;
 
     public int getCsvLimit() {
         return csvLimit;
@@ -29,12 +30,16 @@ public class ConfigLoader {
         return apiKey;
     }
 
-    public String getQueriesPath() {
-        return queriesPath;
+    public String getBeforeQueriesPath() {
+        return beforeQueriesPath;
     }
 
     public String getUpdatedDataQueryPath() {
         return updatedDataQueryPath;
+    }
+
+    public String getAfterQueriesPath() {
+        return afterQueriesPath;
     }
 
     private static final Logger logger = LogManager.getLogger(ConfigLoader.class);
@@ -74,9 +79,15 @@ public class ConfigLoader {
             return false;
         }
 
-        queriesPath = properties.getProperty(("db.queriesPath"));
-        if (queriesPath == null) {
-            logger.error("db.queriesPath doesn't have a valid value");
+        beforeQueriesPath = properties.getProperty(("db.beforeQueriesPath"));
+        if (beforeQueriesPath == null) {
+            logger.error("db.beforeQueriesPath doesn't have a valid value");
+            return false;
+        }
+
+        afterQueriesPath = properties.getProperty(("db.afterQueriesPath"));
+        if (afterQueriesPath == null) {
+            logger.error("db.afterQueriesPath doesn't have a valid value");
             return false;
         }
 
