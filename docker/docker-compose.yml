@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  db:
+  movies_metadata:
     image: postgres:17
     container_name: postgres_db
     environment:
@@ -12,6 +10,7 @@ services:
       - "5432:5432" 
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./db-init/:/docker-entrypoint-initdb.d/
 
 volumes:
   db_data:   

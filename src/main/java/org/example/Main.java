@@ -142,49 +142,14 @@ public class Main {
                 logger.info("Running update for updated_data table");
                 DatabaseFunctions.runStaticQuery(dbUpdatedDataQuery);
 
-                HelperFunctions.runQueries(beforeQueries);
-
-                HelperFunctions.runQueries(afterQueries);
-
-//                for (Map.Entry<String, FileQuery> entry : beforeQueries.entrySet()) {
-//                    String keyValue = entry.getKey();
-//                    String insertQuery = entry.getValue().getInsertQuery();
-//                    String updateQuery = entry.getValue().getUpdateQuery();
-//                    logger.info("Running queries for {} table", keyValue);
-//                    if (insertQuery != null) {
-//                        logger.info("Data insert for table: {}", keyValue);
-//                        DatabaseFunctions.runStaticQuery(insertQuery);
-//                    } else {
-//                        logger.warn("No insert query for {}", keyValue);
-//                    }
-//
-//                    if (updateQuery != null) {
-//                        logger.info("Data update for table: {}", keyValue);
-//                        DatabaseFunctions.runStaticQuery(updateQuery);
-//                    } else {
-//                        logger.warn("No update query for {}", keyValue);
-//                    }
-//                }
-
-//                for (Map.Entry<String, FileQuery> entry : afterQueries.entrySet()) {
-//                    String keyValue = entry.getKey();
-//                    String insertQuery = entry.getValue().getInsertQuery();
-//                    String updateQuery = entry.getValue().getUpdateQuery();
-//                    logger.info("Running queries for {} table", keyValue);
-//                    if (insertQuery != null) {
-//                        logger.info("Data insert for table: {}", keyValue);
-//                        DatabaseFunctions.runStaticQuery(insertQuery);
-//                    } else {
-//                        logger.warn("No insert query for {}", keyValue);
-//                    }
-//
-//                    if (updateQuery != null) {
-//                        logger.info("Data update for table: {}", keyValue);
-//                        DatabaseFunctions.runStaticQuery(updateQuery);
-//                    } else {
-//                        logger.warn("No update query for {}", keyValue);
-//                    }
-//                }
+                boolean beforeQueriesRun = HelperFunctions.runQueries(beforeQueries);
+                boolean afterQueriesRun = HelperFunctions.runQueries(afterQueries);
+                if (!beforeQueriesRun){
+                    logger.error("There was an error with running before Queries");
+                }
+                if (!afterQueriesRun){
+                    logger.error("There was an error with running after Queries");
+                }
 
                 listOfMovieDetails = new ArrayList<>(List.of());
                 listofMovieCredits = new ArrayList<>(List.of());

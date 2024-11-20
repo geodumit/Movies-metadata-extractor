@@ -104,7 +104,7 @@ public class DatabaseFunctions {
     public static List<String> getDetailsIds(){
         List<String> idList = new ArrayList<>();
 
-        String query = "SELECT id FROM movies";
+        String query = "SELECT id FROM updated_data";
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
@@ -127,7 +127,7 @@ public class DatabaseFunctions {
         }
     }
 
-    public static void runStaticQuery(String query){
+    public static boolean runStaticQuery(String query){
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
 
@@ -136,7 +136,8 @@ public class DatabaseFunctions {
             logger.info("{} rows affected", rowsAffected);
         } catch (Exception e) {
             logger.error("Exception occured: {}", e.getMessage());
+            return false;
         }
+        return true;
     }
-
 }

@@ -180,7 +180,9 @@ public class HelperFunctions {
         return queries;
     }
 
-    public static void runQueries(Map<String, FileQuery> queries) {
+    public static boolean runQueries(Map<String, FileQuery> queries) {
+        boolean insertQueryRun = true;
+        boolean updateQueryRun = true;
         for (Map.Entry<String, FileQuery> entry : queries.entrySet()) {
             String keyValue = entry.getKey();
             String insertQuery = entry.getValue().getInsertQuery();
@@ -188,17 +190,21 @@ public class HelperFunctions {
             logger.info("Running queries for {} table", keyValue);
             if (insertQuery != null) {
                 logger.info("Data insert for table: {}", keyValue);
-                DatabaseFunctions.runStaticQuery(insertQuery);
+                insertQueryRun = DatabaseFunctions.runStaticQuery(insertQuery);
             } else {
                 logger.warn("No insert query for {}", keyValue);
             }
 
             if (updateQuery != null) {
                 logger.info("Data update for table: {}", keyValue);
-                DatabaseFunctions.runStaticQuery(updateQuery);
+                updateQueryRun = DatabaseFunctions.runStaticQuery(updateQuery);
             } else {
                 logger.warn("No update query for {}", keyValue);
             }
         }
+        if (!insertQueryRun || !updateQueryRun) {
+            return false;
+        }
+        return true;
     }
 }
