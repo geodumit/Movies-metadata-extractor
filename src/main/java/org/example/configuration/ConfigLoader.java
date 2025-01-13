@@ -12,21 +12,21 @@ import java.util.Properties;
 public class ConfigLoader {
     private final Properties properties = new Properties();
     private String apiKey;
-    private int csvLimit;
+    private int batchLimit;
     private double moviesPopularity;
     private String beforeQueriesPath;
     private String updatedDataQueryPath;
     private String afterQueriesPath;
 
-    public int getCsvLimit() {
-        return csvLimit;
+    public int getBatchLimit() {
+        return batchLimit;
     }
 
     public double getMoviesPopularity() {
         return moviesPopularity;
     }
 
-    public String getapiKey() {
+    public String getApiKey() {
         return apiKey;
     }
 
@@ -53,25 +53,35 @@ public class ConfigLoader {
 
     }
 
-    public Boolean configIsOk() {
+    public boolean apiKeyIsOk(){
+        boolean valueToReturn;
         apiKey = properties.getProperty("api.key");
         if (apiKey == null) {
             logger.error("api.key doesn't have a valid value");
-            return false;
+            valueToReturn = false;
+        } else {
+            valueToReturn = true;
         }
+        return valueToReturn;
+    }
 
+    public boolean batchLimitIsOk(){
         try {
-            String csvLimitString = properties.getProperty("csv.limit");
-            if (csvLimitString == null) {
-                logger.error("csv.limit doesn't have a valid value");
+            String batchLimitString = properties.getProperty("csv.limit");
+            if (batchLimitString == null) {
+                logger.error("batch.limit doesn't have a valid value");
                 return false;
             }
-            csvLimit = Integer.parseInt(csvLimitString);
+            batchLimit = Integer.parseInt(batchLimitString);
         } catch (NumberFormatException e) {
-            logger.error("csv_limit doesn't have a valid value, exception: {}", e.getMessage());
+            logger.error("batch limit doesn't have a valid value in configuration file, exception: {}", e.getMessage());
             return false;
         }
 
+        return true;
+    }
+
+    public Boolean configIsOk() {
         try {
             moviesPopularity = Double.parseDouble(properties.getProperty("movies.popularity"));
         } catch (NullPointerException | NumberFormatException e) {

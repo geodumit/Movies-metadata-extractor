@@ -12,15 +12,35 @@ import java.util.*;
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         ConfigLoader config = new ConfigLoader("C:\\Users\\gdumi\\IdeaProjects\\Export_movies\\src\\main\\resources\\config.properties");
-        if (!config.configIsOk()){
+        if (!config.configIsOk()) {
             System.exit(3);
         }
 
-        String apiKey = config.getapiKey();
-        int csvLimit = config.getCsvLimit();
+        ArgumentsParser argumentsParser = new ArgumentsParser(args);
+
+        // Check Arguments for apiKey or configuration file for it
+        String apiKeyArg = argumentsParser.getApiKey();
+        String apiKey = null;
+        if (apiKeyArg == null){
+            if (config.apiKeyIsOk()){
+                apiKey = config.getApiKey();
+            } else {
+                logger.error("There is no API Key provided in configuration file");
+                System.exit(3);
+            }
+        } else {
+            apiKey = apiKeyArg;
+        }
+
+        // Check Arguments for batch Limit or configuration file for it
+        int batchLimitArg = argumentsParser.getBatchLimit();
+
+
+        System.exit(0);
+        int batchLimit = config.getBatchLimit();
         double moviesPopularity = config.getMoviesPopularity();
         String dbBeforeQueriesPath = config.getBeforeQueriesPath();
         String dbAfterQueriesPath = config.getAfterQueriesPath();
@@ -89,10 +109,19 @@ public class Main {
 
         int errors = 0;
         int error_limit = 5;
+        long startTime = 0;
+        long endTime = 0;
+        long totalTime = 0;
+
+        boolean newRun = true;
 
         logger.info("Popular movies not in Database: {}", popularMoviesNotInDB.size());
 
         for (int i = 0; i < popularMoviesNotInDB.size(); i++) {
+            if (newRun) {
+                startTime = System.nanoTime();
+                newRun = false;
+            }
             int currentId = popularMoviesNotInDB.get(i).getId();
 
             TMDBAPI tmdbapi = new TMDBAPI(apiKey);
@@ -119,7 +148,7 @@ public class Main {
             listOfMovieDetails.add(movieBodyDetails);
             listofMovieCredits.add(movieBodyCredits);
 
-            if (i % csvLimit == 0 && i != 0) {
+            if (i % batchLimit == 0 && i != 0) {
                 List<MovieDetailsCSV> movieDataList = new ArrayList<>(List.of());
                 for (String movie: listOfMovieDetails) {
                     MovieDetailsCSV movieDetailsCSV = new MovieDetailsCSV();
@@ -153,6 +182,13 @@ public class Main {
 
                 listOfMovieDetails = new ArrayList<>(List.of());
                 listofMovieCredits = new ArrayList<>(List.of());
+
+                newRun = true;
+                endTime = System.nanoTime();
+                totalTime = endTime - startTime;
+
+                Date myTime = new Date(totalTime / 1000);
+                System.out.println(myTime);
             }
 
             logger.info("iteration: {}", i);

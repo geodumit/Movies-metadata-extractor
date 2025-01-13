@@ -104,14 +104,14 @@ public class DatabaseFunctions {
     public static List<String> getDetailsIds(){
         List<String> idList = new ArrayList<>();
 
-        String query = "SELECT id FROM updated_data";
+        String query = "SELECT movie_id FROM updated_data";
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
 
             while (resultSet.next()) {
-                String id = resultSet.getString("id");
+                String id = resultSet.getString("movie_id");
                 idList.add(id);
             }
 
