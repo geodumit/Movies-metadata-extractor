@@ -1,11 +1,13 @@
-package org.example.models;
+package org.example.configuration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.example.models.MoviesCSV;
 
 public class ArgumentsParser {
     String apiKey;
     int batchLimit;
+    double moviesPopularity;
 
     public String getApiKey() {
         return apiKey;
@@ -15,11 +17,18 @@ public class ArgumentsParser {
         return batchLimit;
     }
 
-    private static final Logger logger = LogManager.getLogger(MoviesCSV.class);
+    public double getMoviesPopularity() {
+        return moviesPopularity;
+    }
+
+    private static final Logger logger = LogManager.getLogger(ArgumentsParser.class);
 
     public ArgumentsParser(String[] args){
         String batchLimitString = null;
+        String moviesPopularityString = null;
         apiKey = null;
+        batchLimit = -1;
+        moviesPopularity = -1;
 
         for (int i = 0; i < args.length; i++) {
             if ("-apiKey".equals(args[i])) {
@@ -37,17 +46,34 @@ public class ArgumentsParser {
                 } else {
                     logger.warn("No value provided for -bLimit argument");
                     batchLimitString = null;
-                    batchLimit = -1;
+                }
+            }
+
+            if ("-moviePop".equals(args[i])) {
+                if (i + 1 < args.length) {
+                    moviesPopularityString = args[i + 1];
+                } else {
+                    logger.warn("No value provided for -moviePop argument");
+                    moviesPopularityString = null;
                 }
             }
         }
 
+        // Convert the batch limit argument to int
         if (batchLimitString != null) {
             try {
                 batchLimit = Integer.parseInt(batchLimitString);
             } catch (NumberFormatException e) {
                 logger.warn("The batch limit provided in argument is not valid");
-                batchLimit = -1;
+            }
+        }
+
+        // Convert the movies popularity argument to double
+        if (moviesPopularityString != null) {
+            try {
+                moviesPopularity = Double.parseDouble(moviesPopularityString);
+            } catch (NumberFormatException e) {
+                logger.warn("The movies popularity provided in argument is not valid");
             }
         }
     }
