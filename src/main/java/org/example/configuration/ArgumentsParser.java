@@ -8,6 +8,11 @@ public class ArgumentsParser {
     String apiKey;
     int batchLimit;
     double moviesPopularity;
+    String configurationFile;
+
+    public String getConfigurationFile() {
+        return configurationFile;
+    }
 
     public String getApiKey() {
         return apiKey;
@@ -29,8 +34,18 @@ public class ArgumentsParser {
         apiKey = null;
         batchLimit = -1;
         moviesPopularity = -1;
+        configurationFile = null;
 
         for (int i = 0; i < args.length; i++) {
+            if ("-conf".equals(args[i])){
+                if (i + 1 < args.length) {
+                    configurationFile = args[i + 1];
+                } else {
+                    logger.warn("No value provided for -conf argument");
+                    configurationFile = null;
+                }
+            }
+
             if ("-apiKey".equals(args[i])) {
                 if (i + 1 < args.length) {
                     apiKey = args[i + 1];

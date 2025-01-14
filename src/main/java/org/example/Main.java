@@ -7,7 +7,6 @@ import org.example.models.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Time;
 import java.util.*;
 
 public class Main {
@@ -177,8 +176,6 @@ public class Main {
                 logger.info("Batch time: {}:{}:{}", batchTime.get(0), batchTime.get(1), batchTime.get(2));
                 logger.info("Total movies processed so far: {}/{}", totalProcessedMovies, totalMoviesToProcess);
             }
-
-//                logger.info("iteration: {}", i);
         }
     }
 }
