@@ -19,9 +19,9 @@ public class DatabaseFunctions {
 
     private static final Logger logger = LogManager.getLogger(DatabaseFunctions.class);
 
-    public static boolean initializeDB() {
+    public static boolean initializeDB(String confPath) {
         try {
-            HikariConfig config = new HikariConfig("C:\\Users\\gdumi\\IdeaProjects\\Export_movies\\src\\main\\resources\\db.properties");
+            HikariConfig config = new HikariConfig(confPath);
             dataSource = new HikariDataSource(config);
         } catch (Exception e) {
             logger.error("Database initialization failed: {}", e.getMessage());

@@ -20,10 +20,10 @@ public class Main {
         int batchLimit = config.getBatchLimit();
         double moviesPopularity = config.getMoviesPopularity();
 
-        // TODO: These must not be hardcoded, must be changed to relative
-        String dbBeforeQueriesPath = "C:/Users/gdumi/IdeaProjects/Export_movies/docker/Queries/Insert/Before";
-        String dbAfterQueriesPath = "C:/Users/gdumi/IdeaProjects/Export_movies/docker/Queries/Insert/After";
-        String dbUpdateDataQueryPath = "C:/Users/gdumi/IdeaProjects/Export_movies/docker/Queries/UpdatedData/insert_query.sql";
+        String dbBeforeQueriesPath = config.getBeforeQueriesPath();
+        String dbAfterQueriesPath = config.getAfterQueriesPath();
+        String dbUpdateDataQueryPath = config.getUpdatedDataQueryPath();
+        String dbConfPath = config.getDbConfPath();
 
 
         String dbUpdatedDataQuery = HelperFunctions.readFile(new File(dbUpdateDataQueryPath));
@@ -74,7 +74,7 @@ public class Main {
         List<String> listOfMovieDetails = new ArrayList<>(List.of());
         List<String> listofMovieCredits = new ArrayList<>(List.of());
 
-        boolean databaseInitialized = DatabaseFunctions.initializeDB();
+        boolean databaseInitialized = DatabaseFunctions.initializeDB(dbConfPath);
         if (!databaseInitialized) {
             System.exit(11);
         }
@@ -125,6 +125,11 @@ public class Main {
 
             if (errors > error_limit) {
                 logger.error("Could not get more than {} consecutive details for movies", error_limit);
+                System.exit(10);
+            }
+
+            if (errors >= error_limit) {
+                logger.error("More than {} errors, exiting...", error_limit);
                 System.exit(10);
             }
 
