@@ -13,7 +13,11 @@ public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
+        int totalProcessedMovies = 0;
+        int errors = 0;
+        int error_limit = 5;
 
+        // Read configuration parameters from command line arguments
         ConfigCreator config = new ConfigCreator(args);
 
         String apiKey = config.getApiKey();
@@ -25,23 +29,23 @@ public class Main {
         String dbUpdateDataQueryPath = config.getUpdatedDataQueryPath();
         String dbConfPath = config.getDbConfPath();
 
-
+        // Read query that insert data to raw tables
         String dbUpdatedDataQuery = HelperFunctions.readFile(new File(dbUpdateDataQueryPath));
 
-        // Get queries that must be run before any other query
+        // Get queries that must be first, they don't have any foreign keys
         Map<String, FileQuery> beforeQueries = HelperFunctions.getQueries(dbBeforeQueriesPath);
 
-        // Get queries that must be run after the before queries (due to foreign keys)
+        // Get queries that must be run after the first queries, they have foreign keys
         Map<String, FileQuery> afterQueries = HelperFunctions.getQueries(dbAfterQueriesPath);
 
-        // Created the directories needed for the downloaded files and the CSVs
+        // Create the directories needed for the downloaded files and the CSVs
         Path downloadedFilesPath = Paths.get("DownloadedFiles");
-        Path csvDirectory = Paths.get("MoviesCSV");
-        boolean directoriesCreated = HelperFunctions.createDirectories(downloadedFilesPath, csvDirectory);
+        boolean directoriesCreated = HelperFunctions.createDirectories(downloadedFilesPath);
         if (!directoriesCreated) {
             System.exit(4);
         }
 
+        // Initialize the csv of the total movie ids of TMDB
         MoviesCSV moviesCSV = new MoviesCSV();
         boolean csvFileInitialized = moviesCSV.initializeFile(downloadedFilesPath);
         if (!csvFileInitialized) {
@@ -49,37 +53,42 @@ public class Main {
             System.exit(5);
         }
 
+        // Download the compressed file
         boolean csvFileDownloaded = moviesCSV.downloadFile();
         if (!csvFileDownloaded) {
             System.exit(5);
         }
 
+        // Decompress the file
         Path outputFile = moviesCSV.decompress();
         if (outputFile == null) {
             System.exit(5);
         }
 
+        // Create list of Movie objects that contains the data from the file downloaded
         List <Movie> movies;
-
         movies = HelperFunctions.readMoviesFile(outputFile.toString());
 
         logger.info("Total movies: {}", movies.size());
 
+        // Filter the movies, get only the movies with a popularity higher that the one set in the configuration file
         List<Movie> popularMovies = movies.stream()
                 .filter(movie -> movie.getPopularity() > moviesPopularity)
                 .toList();
 
         logger.info("Total movies with a popularity higher than {}: {}", moviesPopularity, popularMovies.size());
 
+        // Create two lists, containing movie details metadata and movie credits metadata
         List<String> listOfMovieDetails = new ArrayList<>(List.of());
         List<String> listofMovieCredits = new ArrayList<>(List.of());
 
+        // Initialize the database using hikari
         boolean databaseInitialized = DatabaseFunctions.initializeDB(dbConfPath);
         if (!databaseInitialized) {
             System.exit(11);
         }
 
-        // get ids of movies in the database
+        // Get ids of movies in the database
         List<String> idsInDB = DatabaseFunctions.getDetailsIds();
 
         // filter only the ids that are not in the database
@@ -87,19 +96,21 @@ public class Main {
                 .filter(movie -> !idsInDB.contains(String.valueOf(movie.getId())))
                 .toList();
 
-        int totalProcessedMovies = 0;
-        int errors = 0;
-        int error_limit = 5;
+        // Time calculator objects to count the time passed for each batch, estimated time etc
         TimeCalculator timeCalculator = new TimeCalculator();
         TimeCalculator elapsedTime = new TimeCalculator();
 
+        // Used to know when a new batch is starting
         boolean newRun = true;
 
         int totalMoviesToProcess = popularMoviesNotInDB.size();
-
         logger.info("Popular movies not in Database: {}", totalMoviesToProcess);
 
+        logger.info("Extracting metadata...");
         elapsedTime.startTimer();
+
+        TMDBAPI tmdbapi = new TMDBAPI(apiKey);
+
         for (int i = 0; i < popularMoviesNotInDB.size(); i++) {
 
             if (newRun) {
@@ -108,7 +119,6 @@ public class Main {
             }
             int currentId = popularMoviesNotInDB.get(i).getId();
 
-            TMDBAPI tmdbapi = new TMDBAPI(apiKey);
             String movieBodyDetails = tmdbapi.getDetails(currentId);
             if (movieBodyDetails == null) {
                 errors += 1;

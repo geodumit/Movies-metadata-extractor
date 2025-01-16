@@ -2,7 +2,6 @@ package org.example.configuration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.models.MoviesCSV;
 
 public class ArgumentsParser {
     String apiKey;

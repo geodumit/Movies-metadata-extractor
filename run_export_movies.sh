@@ -7,35 +7,32 @@ AFTER_QUERIES_PATH="$SCRIPT_DIR/docker/Queries/Insert/After"
 UPDATE_QUERY_PATH="$SCRIPT_DIR/docker/Queries/UpdatedData/insert_query.sql"
 DB_CONF_PATH="$SCRIPT_DIR/db.properties"
 
-# Check if the configuration file exists
-if [ ! -e "$CONFIGURATION_FILE" ]; then
-    echo "The configuration file '$CONFIGURATION_FILE' does not exist."
-    exit 1
-fi
+#Checks if file exists
+check_if_file_exists() {
+    local FILE="$1"
 
-# Check if the path of before queries exists
-if [ ! -d "$BEFORE_QUERIES_PATH" ]; then
-    echo "The Before queries path '$BEFORE_QUERIES_PATH' does not exist."
-    exit 1
-fi
+    if [ ! -e "$FILE" ]; then
+        echo "The file '$FILE' does not exist."
+        exit 1
+    fi
+}
 
-# Check if the path of after queries exists
-if [ ! -d "$AFTER_QUERIES_PATH" ]; then
-    echo "The Before queries path '$AFTER_QUERIES_PATH' does not exist."
-    exit 1
-fi
+#Checks if directory exists
+check_if_directory_exists() {
+    local DIRECTORY="$1"
 
-# Check if the update query file exists
-if [ ! -e "$UPDATE_QUERY_PATH" ]; then
-    echo "The file '$UPDATE_QUERY_PATH' does not exist."
-    exit 1
-fi
+    if [ ! -d "$DIRECTORY" ]; then
+	 echo "The directory "$DIRECTORY" does not exist."
+	 exit 1
+    fi
+}
 
-#Check if the DB configuration file exists
-if [ ! -e "$DB_CONF_PATH" ]; then
-    echo "The file "$DB_CONF_PATH" does not exist."
-    exit 1
-fi
+check_if_file_exists "$CONFIGURATION_FILE"
+check_if_file_exists "$UPDATE_QUERY_PATH"
+check_if_file_exists "$DB_CONF_PATH"
+check_if_directory_exists "$BEFORE_QUERIES_PATH"
+check_if_directory_exists "$AFTER_QUERIES_PATH"
+check_if_directory_exists "$AFTER_QUERIES_PATH"
 
 # Extracts the values to corresponding variables
 while IFS='=' read -r key value; do

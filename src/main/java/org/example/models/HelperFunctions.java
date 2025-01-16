@@ -1,12 +1,8 @@
 package org.example.models;
 
 import com.google.gson.Gson;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -17,7 +13,6 @@ import java.nio.file.Path;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.LocalDateTime;
 
 import java.util.*;
 import java.util.zip.GZIPInputStream;
@@ -122,6 +117,11 @@ public class HelperFunctions {
         }
     }
 
+    /**
+     * converts JSON data to java object data and added to a movies list
+     * @param filePath: The path of the file containing the json data
+     * @return: List<Movie> of the movies contained in the json file
+     */
     public static List<Movie> readMoviesFile(String filePath) {
         List<Movie> movies = new ArrayList<>();
         Gson gson = new Gson();
@@ -139,21 +139,30 @@ public class HelperFunctions {
         return movies;
     }
 
+    /**
+     * Reads the data of a file and returns the content of it
+     * @param file: the file that will be read
+     * @return: the contents of the file read
+     */
     public static String readFile(File file){
         String content;
         try {
             Path filePath = Path.of(file.toURI());
             content = Files.readString(filePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Could not read {}, exception: {}", file.getName(), e.getMessage());
             return null;
         }
         return content;
     }
 
+    /**
+     * Reads the files from a path and reads the contents of the insert_query.sql and update_query.sql
+     * @param dbQueriesPath: The path that contains the files with the queries
+     * @return: Returns a map of the queries found in the path of dbQueriesPath
+     */
     public static Map<String, FileQuery> getQueries(String dbQueriesPath){
         File[] queriesDirectory = FolderLister.getFiles(dbQueriesPath);
-        logger.info("Got " + queriesDirectory.length + " folders to run before");
         Map<String, File[]> queriesFiles = new HashMap<>();
 
         for (File file: queriesDirectory) {

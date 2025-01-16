@@ -19,6 +19,12 @@ public class MoviesCSV {
 
     private static final Logger logger = LogManager.getLogger(MoviesCSV.class);
 
+    /**
+     * prepares file names for: the file needed to be downloaded, the url of the file to download, file path of the
+     * downloaded file, json file
+     * @param downloadedFilesPath: The path of where the files will be created
+     * @return: return true if the files where initialized successfully
+     */
     public boolean initializeFile(Path downloadedFilesPath) {
         currentDate = getCurrentDate("MM_dd_yyyy");
 
@@ -38,6 +44,10 @@ public class MoviesCSV {
         return true;
     }
 
+    /**
+     * Downloads the file that contains the ids of the movies in TMDB
+     * @return: boolean, if the file was downloaded
+     */
     public boolean downloadFile(){
         try {
             HelperFunctions.downloadFile(url, filePath.toString());
@@ -48,6 +58,10 @@ public class MoviesCSV {
         return true;
     }
 
+    /**
+     * Decompresses the file that was downloaded
+     * @return: the compressed file
+     */
     public Path decompress(){
         try {
             decompressGzipFile(filePath.toString(), outputFile.toString());

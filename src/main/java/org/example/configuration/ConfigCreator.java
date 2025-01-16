@@ -42,6 +42,10 @@ public class ConfigCreator {
 
     private static final Logger logger = LogManager.getLogger(ConfigCreator.class);
 
+    /**
+     * Used to create a configuration object that gets data from command line arguments
+     * @param args: arguments from command line
+     */
     public ConfigCreator(String[] args) {
 
         ArgumentsParser argumentsParser = new ArgumentsParser(args);

@@ -19,6 +19,11 @@ public class DatabaseFunctions {
 
     private static final Logger logger = LogManager.getLogger(DatabaseFunctions.class);
 
+    /**
+     * Initializes database connection using hikari with configuration parameters from db.properties
+     * @param confPath: db.properties file
+     * @return: boolean if the initialization was successful
+     */
     public static boolean initializeDB(String confPath) {
         try {
             HikariConfig config = new HikariConfig(confPath);
@@ -101,6 +106,10 @@ public class DatabaseFunctions {
         }
     }
 
+    /**
+     * Get ids of the movies that are in the database
+     * @return: List<String> a list of strings containing the ids of the movies
+     */
     public static List<String> getDetailsIds(){
         List<String> idList = new ArrayList<>();
 
