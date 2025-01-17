@@ -12,5 +12,15 @@ services:
       - db_data:/var/lib/postgresql/data
       - ./db-init/:/docker-entrypoint-initdb.d/
 
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+     - '3000:3000'
+    volumes:
+      - grafana-data:/var/lib/grafana
+
 volumes:
   db_data:   
+  grafana-data:
