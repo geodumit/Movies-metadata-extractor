@@ -16,8 +16,10 @@ services:
     image: grafana/grafana:11.4.0
     container_name: grafana
     restart: unless-stopped
+    environment:
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true
     ports:
-     - '3000:3000'
+      - '3000:3000'
     volumes:
       - grafana-data:/var/lib/grafana
 
