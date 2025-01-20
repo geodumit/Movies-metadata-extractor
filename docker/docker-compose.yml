@@ -24,7 +24,9 @@ services:
       - grafana-data:/var/lib/grafana
 
   imdb_scraper:
-    image: imdb-scraper
+    build:
+      context: ./IMDBScraper
+      dockerfile: Dockerfile
     container_name: imdb_scraper
     restart: unless-stopped
     environment:

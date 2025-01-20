@@ -2,9 +2,7 @@ package org.example.models;
 
 import org.json.JSONObject;
 
-import java.security.Key;
-
-public class MovieDetailsCSV {
+public class MovieDetails {
     String adult;
     String backdropPath;
     String collection;

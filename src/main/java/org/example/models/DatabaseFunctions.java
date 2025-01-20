@@ -41,12 +41,12 @@ public class DatabaseFunctions {
         return "INSERT INTO " + tableName + " (" + joinedColumns + ") VALUES (" + placeholders + ")";
     }
 
-    public static void insertRowsDetails(List<MovieDetailsCSV> movieDataList) {
+    public static void insertRowsDetails(List<MovieDetails> movieDataList) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(detailsQuery)) {
 
             // Loop over the list of movie data and add each to the batch
-            for (MovieDetailsCSV movieData : movieDataList) {
+            for (MovieDetails movieData : movieDataList) {
                 pstmt.setString(1, movieData.getAdult());
                 pstmt.setString(2, movieData.getBackdropPath());
                 pstmt.setString(3, movieData.getCollection());

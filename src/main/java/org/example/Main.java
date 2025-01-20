@@ -8,6 +8,9 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
@@ -110,6 +113,7 @@ public class Main {
         elapsedTime.startTimer();
 
         TMDBAPI tmdbapi = new TMDBAPI(apiKey);
+        ImdbApi imdbapi = new ImdbApi();
 
         for (int i = 0; i < popularMoviesNotInDB.size(); i++) {
 
@@ -148,20 +152,36 @@ public class Main {
             totalProcessedMovies++;
 
             if (i % batchLimit == 0 && i != 0) {
-                List<MovieDetailsCSV> movieDataList = new ArrayList<>(List.of());
-                for (String movie: listOfMovieDetails) {
-                    MovieDetailsCSV movieDetailsCSV = new MovieDetailsCSV();
-                    movieDetailsCSV.initializeMovie(movie);
-
-                    movieDataList.add(movieDetailsCSV);
-                }
-
                 List<MovieCredits> movieCreditsList = new ArrayList<>(List.of());
                 for (String movie: listofMovieCredits) {
                     MovieCredits movieCredits = new MovieCredits();
                     movieCredits.initializeMovie(movie);
 
                     movieCreditsList.add(movieCredits);
+                }
+                List<MovieDetails> movieDataList = new ArrayList<>();
+                ExecutorService executor = Executors.newFixedThreadPool(10);
+                List<MovieProcessor> processors = new ArrayList<>();
+
+                // Create and submit tasks
+                for (String movie : listOfMovieDetails) {
+                    MovieProcessor processor = new MovieProcessor(movie, imdbapi);
+                    processors.add(processor);
+                    executor.submit(processor);
+                }
+
+                // Shutdown executor and wait for all tasks to complete
+                executor.shutdown();
+                try {
+                    executor.awaitTermination(30, TimeUnit.MINUTES);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.err.println("Thread interrupted while waiting for movie processing");
+                }
+
+                // Collect results
+                for (MovieProcessor processor : processors) {
+                    movieDataList.add(processor.getMovieDetails());
                 }
 
                 DatabaseFunctions.insertRowsDetails(movieDataList);
