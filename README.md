@@ -18,7 +18,14 @@ Docker and docker-compose
 To run the tool, follow the below instructions
 
 1. Clone the repository: **`git clone https://github.com/geodumit/Movies-metadata-extractor.git`**
-2. Start the docker containers: `./docker/start_docker_container.sh`
+2. Get an free API key from TMDB from https://www.themoviedb.org/login?to=read_me&redirect=%2Freference%2Fintro%2Fgetting-started
+3. Edit params.config and add your parameters
+   - api.key=The api key your got from step 2
+   - batch.limit=default is 50, data of movies to store in memory before ingesting them in the database
+   - movies.popularity=default is 3.5, with this parameter you can set how many movies to get. 3.5 is aproxximately 100000 movies.
+   - java.path=your java path
+   - jar.path=full path of the jar created when building the project
+5. Start the docker containers: `./docker/start_docker_container.sh`
 ## **Usage**
 
 
