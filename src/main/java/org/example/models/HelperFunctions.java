@@ -3,6 +3,8 @@ package org.example.models;
 import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -189,7 +191,7 @@ public class HelperFunctions {
         return queries;
     }
 
-    public static boolean runQueries(Map<String, FileQuery> queries) {
+    public static void runQueries(Map<String, FileQuery> queries) {
         boolean insertQueryRun = true;
         boolean updateQueryRun = true;
         for (Map.Entry<String, FileQuery> entry : queries.entrySet()) {
@@ -212,8 +214,23 @@ public class HelperFunctions {
             }
         }
         if (!insertQueryRun || !updateQueryRun) {
-            return false;
+            throw new IllegalArgumentException("Queries could not be run");
         }
-        return true;
+    }
+
+    public static ImdbRating extractImdbRating(String jsonRating) {
+        if (jsonRating == null || jsonRating.isEmpty()) {
+            throw new IllegalArgumentException("JSON rating string cannot be null or empty");
+        }
+
+        try {
+            JSONObject movie = new JSONObject(jsonRating);
+            String rating = movie.getString("rating");
+            String ratingCount = movie.getString("rating_count");
+
+            return new ImdbRating(rating, ratingCount);
+        } catch (JSONException e) {
+            throw new IllegalArgumentException("Invalid JSON format or missing required fields", e);
+        }
     }
 }

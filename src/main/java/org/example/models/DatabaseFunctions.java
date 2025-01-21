@@ -73,6 +73,8 @@ public class DatabaseFunctions {
                 pstmt.setString(24, movieData.getVideo());
                 pstmt.setString(25, movieData.getVoteAverage());
                 pstmt.setString(26, movieData.getVote_count());
+                pstmt.setString(27, movieData.getImdbRating());
+                pstmt.setString(28, movieData.getImdbRatingCount());
 
                 pstmt.addBatch();
             }
@@ -82,6 +84,7 @@ public class DatabaseFunctions {
 
         } catch (SQLException e) {
             logger.error("Error during batch insert: {}", e.getMessage());
+            throw new IllegalArgumentException("Error during batch insert");
         }
     }
 
@@ -103,6 +106,7 @@ public class DatabaseFunctions {
 
         } catch (SQLException e) {
             logger.error("Error during batch insert: {}", e.getMessage());
+            throw new IllegalArgumentException("Error during batch insert");
         }
     }
 

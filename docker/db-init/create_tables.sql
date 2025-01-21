@@ -26,7 +26,9 @@ CREATE TABLE raw_details_metadata (
 	title VARCHAR,
 	video VARCHAR,
 	voteAverage VARCHAR,
-	vote_count VARCHAR	,
+	vote_count VARCHAR,
+	imdbRating VARCHAR,
+	imdbRatingCount VARCHAR,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

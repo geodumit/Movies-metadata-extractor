@@ -1,8 +1,7 @@
 package org.example.models;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
+
+import static org.example.models.HelperFunctions.extractImdbRating;
 
 public class MovieProcessor implements Runnable {
     private final MovieDetails movieDetails;
@@ -18,8 +17,13 @@ public class MovieProcessor implements Runnable {
     public void run() {
         System.out.println("Processing movie: " + movieDetails.getImdbId() +
                 " on thread: " + Thread.currentThread().getName());
-        // TODO: have to create a set for IMDB rating and rating count, and check for null
-        System.out.println(imdbapi.getRating(movieDetails.getImdbId()));
+
+        String jsonRating = imdbapi.getRating(movieDetails.getImdbId());
+        ImdbRating imdbRating = extractImdbRating(jsonRating);
+        movieDetails.setImdbRating(imdbRating.getRating());
+        System.out.println(imdbRating.getRating());
+        movieDetails.setImdbRatingCount(imdbRating.getRatingCount());
+        System.out.println(imdbRating.getRatingCount());
     }
 
     public MovieDetails getMovieDetails() {

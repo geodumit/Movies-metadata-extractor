@@ -29,6 +29,24 @@ public class MovieDetails {
     String video;
     String voteAverage;
     String vote_count;
+    String imdbRating;
+    String imdbRatingCount;
+
+    public String getImdbRating() {
+        return imdbRating;
+    }
+
+    public void setImdbRating(String imdbRating) {
+        this.imdbRating = imdbRating;
+    }
+
+    public String getImdbRatingCount() {
+        return imdbRatingCount;
+    }
+
+    public void setImdbRatingCount(String imdbRatingCount) {
+        this.imdbRatingCount = imdbRatingCount;
+    }
 
     public String getAdult() {
         return adult;
@@ -239,35 +257,5 @@ public class MovieDetails {
                 "video;"+
                 "voteAverage;"+
                 "vote_count;";
-    }
-
-    public String getCSVRow(){
-        return adult + ";" +
-                backdropPath + ";" +
-                collection + ";" +
-                budget + ";" +
-                genres + ";" +
-                homepage + ";" +
-                id + ";" +
-                imdbId + ";" +
-                originCountry + ";" +
-                originalLanguage + ";" +
-                originalTitle + ";" +
-                overview + ";" +
-                popularity + ";" +
-                posterPath + ";" +
-                productionCompanies + ";" +
-                productionCountries + ";" +
-                releaseDate + ";" +
-                revenue + ";" +
-                runtime + ";" +
-                spokenLanguages + ";" +
-                status + ";" +
-                tagline + ";" +
-                title + ";" +
-                video + ";" +
-                voteAverage + ";" +
-                vote_count;
-
     }
 }

@@ -184,19 +184,22 @@ public class Main {
                     movieDataList.add(processor.getMovieDetails());
                 }
 
-                DatabaseFunctions.insertRowsDetails(movieDataList);
-                DatabaseFunctions.insertRowsCredits(movieCreditsList);
+                try {
+                    DatabaseFunctions.insertRowsDetails(movieDataList);
+                    DatabaseFunctions.insertRowsCredits(movieCreditsList);
+                } catch(IllegalArgumentException e) {
+                    System.exit(4);
+                }
 
                 logger.info("Running update for updated_data table");
                 DatabaseFunctions.runStaticQuery(dbUpdatedDataQuery);
 
-                boolean beforeQueriesRun = HelperFunctions.runQueries(beforeQueries);
-                boolean afterQueriesRun = HelperFunctions.runQueries(afterQueries);
-                if (!beforeQueriesRun){
-                    logger.error("There was an error with running before Queries");
-                }
-                if (!afterQueriesRun){
-                    logger.error("There was an error with running after Queries");
+                try {
+                    HelperFunctions.runQueries(beforeQueries);
+                    HelperFunctions.runQueries(afterQueries);
+                } catch (IllegalArgumentException e) {
+                    logger.error("Before or after queries could not be run");
+                    System.exit(3);
                 }
 
                 listOfMovieDetails = new ArrayList<>(List.of());
