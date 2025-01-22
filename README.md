@@ -52,6 +52,16 @@ After each batch is finished the below tables will be filled with data
    - *crew*: similar to actors but for the rest of the crew
    - *crew_roles*: similar to actor_characters but for the crew
 
+## **Grafana**
+Grafana is used in order to show some cases of usage\
+It has the postgres datasource and some dashboards 
+   - *Individual movie* dashboard, shows basic infomartion about a movie, the movie can be changed from the variable movie. The link in the actors redirects to the Individual actor below
+     ![image](https://github.com/user-attachments/assets/b45cacab-8a4f-4034-96ea-33bf509f8c5b)
+   - *Individual actor* dashboard, shows characters played by the actor, the actor can be changed from the variable actor. The link in the movie redirects to the Individual movie above
+     ![image](https://github.com/user-attachments/assets/a33c4c05-334c-4a54-bfd2-ae0c83532d63)
+   - *Movie Statistics* dashboards, basic graphs that show some statistics of movies
+     ![image](https://github.com/user-attachments/assets/4603db64-5f92-4d6e-aaf1-0e77c3b5799f)
+
 
 
 ## **License**
