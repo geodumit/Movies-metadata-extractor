@@ -34,7 +34,7 @@ To run the tool, follow the below instructions
 After following the instructions in Installation you can run the tool by running
 `./run_export_movies.sh`
 
-The process will start, at the end of each batch it will show estimated time for the extraction of all the movies. For a popularity of 3.5(default) approximate time is 12 hours and 60k movies.
+The process will start, at the end of each batch it will show estimated time for the extraction of all the movies. For a popularity of 3.5(default) approximate time is 12 hours and 100k movies.
 
 ## **Database**
 The database has default port 5432 and runs in docker container. Default port can be changed by editing **docker/docker-compose.yml** and **db.properties**\
