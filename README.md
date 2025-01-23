@@ -7,7 +7,7 @@ The tool was created in order to use with any movie-related app that might need 
 - Java, runs the basic functions like extracting data from TMDB and from the Python API below.
 - Python API using flask that runs in a docker container, uses beautiful soup to extract data from IMDB.
 - Postgres database that runs in a docker container.
-- Grafana that runs in a docker container, with some basic dashboards that show some basic functionalities for the tool\
+- Grafana that runs in a docker container, with some basic dashboards that show some basic functionalities for the tool
 
 High level of the architecture
 ![image](https://github.com/user-attachments/assets/3a9972ff-46cc-46a4-920c-9b49a0318b68)
