@@ -22,7 +22,7 @@ Linux system or WSL on windows
 To run the tool, follow the below instructions
 
 1. Clone the repository: **`git clone https://github.com/geodumit/Movies-metadata-extractor.git`**
-2. run `mvn clean install`
+2. run `mvn clean install` to build the project
 3. Get a free API key from TMDB from https://www.themoviedb.org/login?to=read_me&redirect=%2Freference%2Fintro%2Fgetting-started
 4. Edit params.config and add your parameters
    - api.key=The api key your got from step 2
