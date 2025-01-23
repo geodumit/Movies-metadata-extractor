@@ -22,8 +22,9 @@ Linux system or WSL on windows
 To run the tool, follow the below instructions
 
 1. Clone the repository: **`git clone https://github.com/geodumit/Movies-metadata-extractor.git`**
-2. Get a free API key from TMDB from https://www.themoviedb.org/login?to=read_me&redirect=%2Freference%2Fintro%2Fgetting-started
-3. Edit params.config and add your parameters
+2. run `mvn clean install`
+3. Get a free API key from TMDB from https://www.themoviedb.org/login?to=read_me&redirect=%2Freference%2Fintro%2Fgetting-started
+4. Edit params.config and add your parameters
    - api.key=The api key your got from step 2
    - batch.limit=default is 50, data of movies to store in memory before ingesting them in the database
    - movies.popularity=default is 3.5, with this parameter you can set how many movies to get. 3.5 is aproxximately 100000 movies.
