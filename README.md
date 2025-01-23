@@ -15,20 +15,21 @@ High level of the architecture
 
 ## **Requirements**
 Java 17+\
-Docker and docker-compose
+Docker and docker-compose\
+Linux system or WSL on windows
 
 ## **Installation**
 To run the tool, follow the below instructions
 
 1. Clone the repository: **`git clone https://github.com/geodumit/Movies-metadata-extractor.git`**
-2. Get an free API key from TMDB from https://www.themoviedb.org/login?to=read_me&redirect=%2Freference%2Fintro%2Fgetting-started
+2. Get a free API key from TMDB from https://www.themoviedb.org/login?to=read_me&redirect=%2Freference%2Fintro%2Fgetting-started
 3. Edit params.config and add your parameters
    - api.key=The api key your got from step 2
    - batch.limit=default is 50, data of movies to store in memory before ingesting them in the database
    - movies.popularity=default is 3.5, with this parameter you can set how many movies to get. 3.5 is aproxximately 100000 movies.
    - java.path=your java path
    - jar.path=full path of the jar created when building the project (you can find the latest jar at target/Export_movies-1.0-SNAPSHOT-jar-with-dependencies.jar or build it on your own)
-5. Start the docker containers: `./docker/start_docker_container.sh`
+5. Start the docker containers: `./docker/start_docker_container.sh`. Three containers will start up, postgres, grafana and the python IMDB scraper
 
 ## **Usage**
 After following the instructions in Installation you can run the tool by running
@@ -55,7 +56,7 @@ After each batch is finished the below tables will be filled with data
 ## **Grafana**
 Grafana is used in order to show some cases of usage\
 It has the postgres datasource and some dashboards 
-   - *Individual movie* dashboard, shows basic infomartion about a movie, the movie can be changed from the variable movie. The link in the actors redirects to the Individual actor below
+   - *Individual movie* dashboard, shows basic information about a movie, the movie can be changed from the variable movie. The link in the actors redirects to the Individual actor below
      ![image](https://github.com/user-attachments/assets/b45cacab-8a4f-4034-96ea-33bf509f8c5b)
    - *Individual actor* dashboard, shows characters played by the actor, the actor can be changed from the variable actor. The link in the movie redirects to the Individual movie above
      ![image](https://github.com/user-attachments/assets/a33c4c05-334c-4a54-bfd2-ae0c83532d63)
