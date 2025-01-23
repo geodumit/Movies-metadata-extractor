@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIGURATION_FILE="./real_params.config"
+CONFIGURATION_FILE="./params.config"
 SCRIPT_DIR=$(dirname "$0")
 BEFORE_QUERIES_PATH="$SCRIPT_DIR/docker/Queries/Insert/Before"
 AFTER_QUERIES_PATH="$SCRIPT_DIR/docker/Queries/Insert/After"
