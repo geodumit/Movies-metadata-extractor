@@ -1,0 +1,202 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 3,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "aeaag3rj96akgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "title"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "",
+                    "url": "http://localhost:3000/d/beaagtqqslxc0b/individual-movie?orgId=1&from=now-30m&to=now&timezone=browser&var-movie=${__data.fields.title}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 20,
+        "w": 13,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "aeaag3rj96akgc"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select \r\n  m.title,\r\n  character\r\nfrom \r\nactor_characters ac\r\ninner join movies m on movie_id = id\r\nwhere actor_id = (select id from actors where name = '$actor')",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Roles",
+      "type": "table"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 20,
+        "w": 7,
+        "x": 13,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>${movie} Overview</title>\n</head>\n<body>\n    <div>\n        <img src=\"https://image.tmdb.org/t/p/w500/${actorImage}\" alt=\"${actor} poster\">\n    </div>\n</body>\n</html>",
+        "mode": "html"
+      },
+      "pluginVersion": "11.4.0",
+      "title": "Actor Image",
+      "type": "text"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 40,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "Nicolas Cage",
+          "value": "Nicolas Cage"
+        },
+        "definition": "select name from actors",
+        "description": "",
+        "label": "actor",
+        "name": "actor",
+        "options": [],
+        "query": "select name from actors",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "/ar33qcWbEgREn07ZpXv5Pbj8hbM.jpg",
+          "value": "/ar33qcWbEgREn07ZpXv5Pbj8hbM.jpg"
+        },
+        "definition": "select \nprofile_path \nfrom actors where name = '$actor'\n",
+        "hide": 2,
+        "name": "actorImage",
+        "options": [],
+        "query": "select \nprofile_path \nfrom actors where name = '$actor'\n",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Individual Actor",
+  "uid": "feas8cr94fkzke",
+  "version": 5,
+  "weekStart": ""
+}

@@ -58,6 +58,8 @@ CREATE TABLE movies (
     revenue INT,
     runtime INT,
     tagline VARCHAR,
+	imdbRating DECIMAL,
+	imdbRatingCount INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

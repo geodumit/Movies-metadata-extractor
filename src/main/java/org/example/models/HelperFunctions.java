@@ -74,8 +74,10 @@ public class HelperFunctions {
 
     public static void downloadFile(String fileURL, String saveFilePath) throws IOException {
         URL url = new URL(fileURL);
+        logger.info("Downloading file: {}", fileURL);
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
         int responseCode = httpConnection.getResponseCode();
+        logger.info("Response code: {}", responseCode);
 
         // Check if the response code is HTTP OK (200)
         if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -191,7 +193,7 @@ public class HelperFunctions {
         return queries;
     }
 
-    public static void runQueries(Map<String, FileQuery> queries) {
+    public static void runQueries(Map<String, FileQuery> queries, DatabaseFunctions databaseFunctions) {
         boolean insertQueryRun = true;
         boolean updateQueryRun = true;
         for (Map.Entry<String, FileQuery> entry : queries.entrySet()) {
@@ -201,14 +203,14 @@ public class HelperFunctions {
             logger.info("Running queries for {} table", keyValue);
             if (insertQuery != null) {
                 logger.info("Data insert for table: {}", keyValue);
-                insertQueryRun = DatabaseFunctions.runStaticQuery(insertQuery);
+                insertQueryRun = databaseFunctions.runStaticQuery(insertQuery);
             } else {
                 logger.warn("No insert query for {}", keyValue);
             }
 
             if (updateQuery != null) {
                 logger.info("Data update for table: {}", keyValue);
-                updateQueryRun = DatabaseFunctions.runStaticQuery(updateQuery);
+                updateQueryRun = databaseFunctions.runStaticQuery(updateQuery);
             } else {
                 logger.warn("No update query for {}", keyValue);
             }
@@ -231,6 +233,43 @@ public class HelperFunctions {
             return new ImdbRating(rating, ratingCount);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Invalid JSON format or missing required fields", e);
+        }
+    }
+
+    /**
+     * Converts shorthand numbers like 1.1k to 1100 etc
+     * @param input: String of the shorthand number
+     * @return: The number in long
+     */
+    public static long convertShorthandToNumber(String input) {
+        if (input == null || input.isEmpty()) {
+            throw new IllegalArgumentException("Input cannot be null or empty");
+        }
+
+        char lastChar = input.charAt(input.length() - 1);
+        double number;
+
+        try {
+            // If it ends with 'k', 'm', or 'b', handle accordingly
+            return switch (lastChar) {
+                case 'K'  -> {
+                    number = Double.parseDouble(input.substring(0, input.length() - 1));
+                    yield (long) (number * 1_000); // Thousands
+                }
+                case 'M' -> {
+                    number = Double.parseDouble(input.substring(0, input.length() - 1));
+                    yield (long) (number * 1_000_000); // Millions
+                }
+                case 'B' -> {
+                    number = Double.parseDouble(input.substring(0, input.length() - 1));
+                    yield (long) (number * 1_000_000_000); // Billions
+                }
+                default ->
+                    // If no suffix, assume it's a plain number
+                        Long.parseLong(input);
+            };
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid input format: " + input);
         }
     }
 }

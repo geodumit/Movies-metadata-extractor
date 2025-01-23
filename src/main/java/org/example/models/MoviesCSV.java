@@ -3,6 +3,7 @@ package org.example.models;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -49,6 +50,11 @@ public class MoviesCSV {
      * @return: boolean, if the file was downloaded
      */
     public boolean downloadFile(){
+        File downloadedFile = new File(filePath.toString());
+        if (downloadedFile.isFile()) {
+            logger.info("File : {} already exists", downloadedFile);
+            return true;
+        }
         try {
             HelperFunctions.downloadFile(url, filePath.toString());
         } catch (IOException e) {

@@ -10,137 +10,152 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-public class DatabaseFunctions {
-    private static HikariDataSource dataSource;
+public class DatabaseFunctions implements AutoCloseable {
+    private final HikariDataSource dataSource;
 
-    private static final String detailsQuery = buildSql(DatabaseData.getDetailsColumns(), DatabaseData.getDetailsTable());
-    private static final String creditsQuery = buildSql(DatabaseData.getCreditsColumns(), DatabaseData.getCreditsTable());
+    private final String detailsQuery;
+    private final String creditsQuery;
 
     private static final Logger logger = LogManager.getLogger(DatabaseFunctions.class);
 
-    /**
-     * Initializes database connection using hikari with configuration parameters from db.properties
-     * @param confPath: db.properties file
-     * @return: boolean if the initialization was successful
-     */
-    public static boolean initializeDB(String confPath) {
+    public DatabaseFunctions(String configPath) {
+        this.detailsQuery = buildSql(DatabaseData.getDetailsColumns(), DatabaseData.getDetailsTable());
+        this.creditsQuery = buildSql(DatabaseData.getCreditsColumns(), DatabaseData.getCreditsTable());
+        this.dataSource = initializeDataSource(configPath);
+    }
+
+    private HikariDataSource initializeDataSource(String configPath) {
         try {
-            HikariConfig config = new HikariConfig(confPath);
-            dataSource = new HikariDataSource(config);
+            HikariConfig config = new HikariConfig(configPath);
+            return new HikariDataSource(config);
         } catch (Exception e) {
-            logger.error("Database initialization failed: {}", e.getMessage());
-            return false;
+            logger.error("Failed to initialize database: {}", e.getMessage(), e);
+            throw new DatabaseInitializationException("Could not initialize database", e);
         }
-        return true;
     }
 
-    private static String buildSql(String[] tableColumns, String tableName) {
-        String joinedColumns = String.join(", ", tableColumns);
-        String placeholders = String.join(", ", Collections.nCopies(tableColumns.length, "?"));
-        return "INSERT INTO " + tableName + " (" + joinedColumns + ") VALUES (" + placeholders + ")";
-    }
+    public void insertMovieDetails(List<MovieDetails> movies) {
+        if (movies == null || movies.isEmpty()) {
+            logger.warn("No movie details to insert");
+            return;
+        }
 
-    public static void insertRowsDetails(List<MovieDetails> movieDataList) {
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(detailsQuery)) {
 
-            // Loop over the list of movie data and add each to the batch
-            for (MovieDetails movieData : movieDataList) {
-                pstmt.setString(1, movieData.getAdult());
-                pstmt.setString(2, movieData.getBackdropPath());
-                pstmt.setString(3, movieData.getCollection());
-                pstmt.setString(4, movieData.getBudget());
-                pstmt.setString(5, movieData.getGenres());
-                pstmt.setString(6, movieData.getHomepage());
-                pstmt.setString(7, movieData.getId());
-                pstmt.setString(8, movieData.getImdbId());
-                pstmt.setString(9, movieData.getOriginCountry());
-                pstmt.setString(10, movieData.getOriginalLanguage());
-                pstmt.setString(11, movieData.getOriginalTitle());
-                pstmt.setString(12, movieData.getOverview());
-                pstmt.setString(13, movieData.getPopularity());
-                pstmt.setString(14, movieData.getPosterPath());
-                pstmt.setString(15, movieData.getProductionCompanies());
-                pstmt.setString(16, movieData.getProductionCountries());
-                pstmt.setString(17, movieData.getReleaseDate());
-                pstmt.setString(18, movieData.getRevenue());
-                pstmt.setString(19, movieData.getRuntime());
-                pstmt.setString(20, movieData.getSpokenLanguages());
-                pstmt.setString(21, movieData.getStatus());
-                pstmt.setString(22, movieData.getTagline());
-                pstmt.setString(23, movieData.getTitle());
-                pstmt.setString(24, movieData.getVideo());
-                pstmt.setString(25, movieData.getVoteAverage());
-                pstmt.setString(26, movieData.getVote_count());
-                pstmt.setString(27, movieData.getImdbRating());
-                pstmt.setString(28, movieData.getImdbRatingCount());
-
+            for (MovieDetails movie : movies) {
+                setMovieDetailsParameters(pstmt, movie);
                 pstmt.addBatch();
             }
 
-            int[] rowsAffected = pstmt.executeBatch();
-            logger.info("Batch insert completed to raw_details_metadata. Rows affected: {}", rowsAffected.length);
-
+            executeBatch(pstmt, "details");
         } catch (SQLException e) {
-            logger.error("Error during batch insert: {}", e.getMessage());
-            throw new IllegalArgumentException("Error during batch insert");
+            logger.error("Failed to insert movie details: {}", e.getMessage(), e);
+            throw new DatabaseOperationException("Error inserting movie details", e);
         }
     }
 
+    private void setMovieDetailsParameters(PreparedStatement pstmt, MovieDetails movie) throws SQLException {
+        pstmt.setString(1, movie.getAdult());
+        pstmt.setString(2, movie.getBackdropPath());
+        pstmt.setString(3, movie.getCollection());
+        pstmt.setString(4, movie.getBudget());
+        pstmt.setString(5, movie.getGenres());
+        pstmt.setString(6, movie.getHomepage());
+        pstmt.setString(7, movie.getId());
+        pstmt.setString(8, movie.getImdbId());
+        pstmt.setString(9, movie.getOriginCountry());
+        pstmt.setString(10, movie.getOriginalLanguage());
+        pstmt.setString(11, movie.getOriginalTitle());
+        pstmt.setString(12, movie.getOverview());
+        pstmt.setString(13, movie.getPopularity());
+        pstmt.setString(14, movie.getPosterPath());
+        pstmt.setString(15, movie.getProductionCompanies());
+        pstmt.setString(16, movie.getProductionCountries());
+        pstmt.setString(17, movie.getReleaseDate());
+        pstmt.setString(18, movie.getRevenue());
+        pstmt.setString(19, movie.getRuntime());
+        pstmt.setString(20, movie.getSpokenLanguages());
+        pstmt.setString(21, movie.getStatus());
+        pstmt.setString(22, movie.getTagline());
+        pstmt.setString(23, movie.getTitle());
+        pstmt.setString(24, movie.getVideo());
+        pstmt.setString(25, movie.getVoteAverage());
+        pstmt.setString(26, movie.getVote_count());
+        pstmt.setString(27, movie.getImdbRating());
+        pstmt.setString(28, movie.getImdbRatingCount());
+    }
 
+    private static String buildSql(String[] columns, String tableName) {
+        return String.format("INSERT INTO %s (%s) VALUES (%s)",
+                tableName,
+                String.join(", ", columns),
+                String.join(", ", Collections.nCopies(columns.length, "?"))
+        );
+    }
 
-    public static void insertRowsCredits(List<MovieCredits> movieDataList) {
+    public void insertMovieCredits(List<MovieCredits> credits) {
+        if (credits == null || credits.isEmpty()) {
+            logger.warn("No movie credits to insert");
+            return;
+        }
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(creditsQuery)) {
-            for (MovieCredits movieData : movieDataList) {
-                pstmt.setString(1, movieData.getId());
-                pstmt.setString(2, movieData.getCast());
-                pstmt.setString(3, movieData.getCrew());
-
+            for (MovieCredits credit : credits) {
+                pstmt.setString(1, credit.getId());
+                pstmt.setString(2, credit.getCast());
+                pstmt.setString(3, credit.getCrew());
                 pstmt.addBatch();
+
             }
-
-            int[] rowsAffected = pstmt.executeBatch();
-            logger.info("Batch insert completed to raw_credits_metadata. Rows affected: {}", rowsAffected.length);
-
+            executeBatch(pstmt, "credits");
         } catch (SQLException e) {
-            logger.error("Error during batch insert: {}", e.getMessage());
-            throw new IllegalArgumentException("Error during batch insert");
+            logger.error("Failed to insert movie credits: {}", e.getMessage(), e);
+            throw new DatabaseOperationException("Error inserting movie credits", e);
         }
+    }
+
+    private void executeBatch(PreparedStatement pstmt, String operation) throws SQLException {
+        int[] results = pstmt.executeBatch();
+        int totalUpdates = 0;
+        for (int result : results) {
+            if (result >= 0) totalUpdates += result;
+        }
+        logger.info("Batch {} insert completed. Rows affected: {}", operation, totalUpdates);
     }
 
     /**
      * Get ids of the movies that are in the database
      * @return: List<String> a list of strings containing the ids of the movies
      */
-    public static List<String> getDetailsIds(){
-        List<String> idList = new ArrayList<>();
-
+    public List<String> getDetailsIds() {
         String query = "SELECT movie_id FROM updated_data";
+        List<String> ids = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(query)) {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
 
-            while (resultSet.next()) {
-                String id = resultSet.getString("movie_id");
-                idList.add(id);
+            while (rs.next()) {
+                ids.add(rs.getString("movie_id"));
             }
+            return ids;
 
         } catch (SQLException e) {
-            logger.error("Could not get ids from database, exception: {}", e.getMessage());
-        }
-        return idList.isEmpty() ? Collections.emptyList() : idList;
-    }
-
-    public static void closeDataSource() {
-        if (dataSource != null && !dataSource.isClosed()) {
-            dataSource.close();
+            logger.error("Failed to retrieve movie IDs: {}", e.getMessage(), e);
+            return Collections.emptyList();
         }
     }
 
-    public static boolean runStaticQuery(String query){
+    @Override
+    public void close() {
+        Optional.ofNullable(dataSource).ifPresent(HikariDataSource::close);
+    }
+
+    public boolean runStaticQuery(String query){
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
 
@@ -153,4 +168,17 @@ public class DatabaseFunctions {
         }
         return true;
     }
+
+    public static class DatabaseInitializationException extends RuntimeException {
+        public DatabaseInitializationException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    public static class DatabaseOperationException extends RuntimeException {
+        public DatabaseOperationException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
 }

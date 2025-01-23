@@ -85,14 +85,18 @@ public class Main {
         List<String> listOfMovieDetails = new ArrayList<>(List.of());
         List<String> listofMovieCredits = new ArrayList<>(List.of());
 
-        // Initialize the database using hikari
-        boolean databaseInitialized = DatabaseFunctions.initializeDB(dbConfPath);
-        if (!databaseInitialized) {
+
+        DatabaseFunctions databaseFunctions = null;
+        try {
+            databaseFunctions = new DatabaseFunctions(dbConfPath);
+            logger.info("Database initialized");
+        } catch (DatabaseFunctions.DatabaseInitializationException e) {
+            logger.error("Failed to initialize database: {}", e.getMessage());
             System.exit(11);
         }
 
         // Get ids of movies in the database
-        List<String> idsInDB = DatabaseFunctions.getDetailsIds();
+        List<String> idsInDB = databaseFunctions.getDetailsIds();
 
         // filter only the ids that are not in the database
         List<Movie> popularMoviesNotInDB = popularMovies.stream()
@@ -160,7 +164,7 @@ public class Main {
                     movieCreditsList.add(movieCredits);
                 }
                 List<MovieDetails> movieDataList = new ArrayList<>();
-                ExecutorService executor = Executors.newFixedThreadPool(10);
+                ExecutorService executor = Executors.newFixedThreadPool(5);
                 List<MovieProcessor> processors = new ArrayList<>();
 
                 // Create and submit tasks
@@ -185,18 +189,18 @@ public class Main {
                 }
 
                 try {
-                    DatabaseFunctions.insertRowsDetails(movieDataList);
-                    DatabaseFunctions.insertRowsCredits(movieCreditsList);
+                    databaseFunctions.insertMovieDetails(movieDataList);
+                    databaseFunctions.insertMovieCredits(movieCreditsList);
                 } catch(IllegalArgumentException e) {
                     System.exit(4);
                 }
 
                 logger.info("Running update for updated_data table");
-                DatabaseFunctions.runStaticQuery(dbUpdatedDataQuery);
+                databaseFunctions.runStaticQuery(dbUpdatedDataQuery);
 
                 try {
-                    HelperFunctions.runQueries(beforeQueries);
-                    HelperFunctions.runQueries(afterQueries);
+                    HelperFunctions.runQueries(beforeQueries, databaseFunctions);
+                    HelperFunctions.runQueries(afterQueries, databaseFunctions);
                 } catch (IllegalArgumentException e) {
                     logger.error("Before or after queries could not be run");
                     System.exit(3);

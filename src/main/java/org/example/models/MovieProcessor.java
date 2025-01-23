@@ -15,15 +15,10 @@ public class MovieProcessor implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Processing movie: " + movieDetails.getImdbId() +
-                " on thread: " + Thread.currentThread().getName());
-
         String jsonRating = imdbapi.getRating(movieDetails.getImdbId());
         ImdbRating imdbRating = extractImdbRating(jsonRating);
         movieDetails.setImdbRating(imdbRating.getRating());
-        System.out.println(imdbRating.getRating());
-        movieDetails.setImdbRatingCount(imdbRating.getRatingCount());
-        System.out.println(imdbRating.getRatingCount());
+        movieDetails.setImdbRatingCount(Long.toString(HelperFunctions.convertShorthandToNumber(imdbRating.getRatingCount())));
     }
 
     public MovieDetails getMovieDetails() {

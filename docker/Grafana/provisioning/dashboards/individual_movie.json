@@ -1,0 +1,593 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "uid": "aeaag3rj96akgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select budget from movies\r\nwhere title = '$movie'",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "aeaag3rj96akgc"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": true,
+          "rawQuery": true,
+          "rawSql": "select revenue from movies\r\nwhere title = '$movie'",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Budget",
+      "transformations": [
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byName",
+              "options": "budget"
+            },
+            "configRefId": "A",
+            "mappings": [
+              {
+                "fieldName": "budget",
+                "handlerKey": "field.value",
+                "reducerId": "lastNotNull"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "aeaag3rj96akgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select revenue from movies\r\nwhere title = '$movie'",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Revenue",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "aeaag3rj96akgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "name"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "",
+                    "url": "http://localhost:3000/d/feas8cr94fkzke/individual-actor?orgId=1&from=now-6h&to=now&timezone=browser&var-query0=&var-actor=${__data.fields.name}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 21,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "with movie_characters as  (\r\n\tselect actor_id, character\r\n\tfrom \r\n\tactor_characters ac\r\n\tinner join movies m\r\n\ton ac.movie_id = m.id \r\n\tand title = '$movie'\r\n)\r\nselect name, character\r\nfrom movie_characters mc\r\ninner join actors a\r\non mc.actor_id = a.id\r\norder by id",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Actors",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "actor",
+            "renamePattern": "Actor"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "character",
+            "renamePattern": "Character"
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 2,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>${movie} Overview</title>\n</head>\n<body>\n    <h1>Overview</h1>\n    <p>${overview}</p>\n\n    <p><strong>Tagline:</strong> ${tagline}</p>\n    <p><strong>Runtime:</strong> ${runtime} minutes</p>\n    <p><strong>Genres:</strong> ${genres}</p>\n    <p><strong>IMDB Rating:</strong> ${imdbRating} (${imdbRatingCount})</p>\n\n    <div>\n        <img src=\"https://image.tmdb.org/t/p/w500/${backdropPath}\" alt=\"${movie} poster\">\n    </div>\n</body>\n</html>\n",
+        "mode": "html"
+      },
+      "pluginVersion": "11.4.0",
+      "title": "Details",
+      "type": "text"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 40,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "xXx",
+          "value": "xXx"
+        },
+        "definition": "SELECT title FROM movies\norder by popularity desc",
+        "label": "movie",
+        "name": "movie",
+        "options": [],
+        "query": "SELECT title FROM movies\norder by popularity desc",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "Xander Cage is your standard adrenaline junkie with no fear and a lousy attitude. When the US Government \"recruits\" him to go on a mission, he's not exactly thrilled. His mission: to gather information on an organization that may just be planning the destruction of the world, led by the nihilistic Yorgi.",
+          "value": "Xander Cage is your standard adrenaline junkie with no fear and a lousy attitude. When the US Government \"recruits\" him to go on a mission, he's not exactly thrilled. His mission: to gather information on an organization that may just be planning the destruction of the world, led by the nihilistic Yorgi."
+        },
+        "definition": "select overview from movies\nwhere title = '$movie'",
+        "description": "",
+        "hide": 2,
+        "label": "overview",
+        "name": "overview",
+        "options": [],
+        "query": "select overview from movies\nwhere title = '$movie'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "/qwK9soQmmJ7kRdjLZVXblw3g7AQ.jpg",
+          "value": "/qwK9soQmmJ7kRdjLZVXblw3g7AQ.jpg"
+        },
+        "definition": "select backdrop_path from movies\nwhere title = '$movie'",
+        "description": "Gets the backdrop path of the movie selected in the variable {movie}",
+        "hide": 2,
+        "label": "backdropPath",
+        "name": "backdropPath",
+        "options": [],
+        "query": "select backdrop_path from movies\nwhere title = '$movie'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "124",
+          "value": "124"
+        },
+        "definition": "select runtime from movies\nwhere title = '$movie'",
+        "hide": 2,
+        "label": "runtime",
+        "name": "runtime",
+        "options": [],
+        "query": "select runtime from movies\nwhere title = '$movie'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "1028851200000",
+          "value": "1028851200000"
+        },
+        "definition": "select release_date from movies \nwhere title = '$movie'",
+        "hide": 2,
+        "label": "release_date",
+        "name": "release_date",
+        "options": [],
+        "query": "select release_date from movies \nwhere title = '$movie'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "277448382",
+          "value": "277448382"
+        },
+        "definition": "select revenue from movies\nwhere title = '$movie'",
+        "description": "",
+        "hide": 2,
+        "label": "revenue",
+        "name": "revenue",
+        "options": [],
+        "query": "select revenue from movies\nwhere title = '$movie'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "A new breed of secret agent.",
+          "value": "A new breed of secret agent."
+        },
+        "definition": "select tagline from movies\nwhere title = '$movie'",
+        "hide": 2,
+        "label": "tagline",
+        "name": "tagline",
+        "options": [],
+        "query": "select tagline from movies\nwhere title = '$movie'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "definition": "with movie_genre as (\nselect * from movie_genres\ninner join movies \non movie_id = id\nand title = '$movie'\n) select name\nfrom movie_genre mv\ninner join genres g\non mv.genre_id = g.id ",
+        "hide": 2,
+        "includeAll": true,
+        "label": "genres",
+        "name": "genres",
+        "options": [],
+        "query": "with movie_genre as (\nselect * from movie_genres\ninner join movies \non movie_id = id\nand title = '$movie'\n) select name\nfrom movie_genre mv\ninner join genres g\non mv.genre_id = g.id ",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "definition": "with movie_characters as  (\n\tselect actor_id, character\n\tfrom \n\tactor_characters ac\n\tinner join movies m\n\ton ac.movie_id = m.id \n\tand title = '$movie'\n)\nselect name\nfrom movie_characters mc\ninner join actors a\non mc.actor_id = a.id\norder by id",
+        "hide": 2,
+        "includeAll": true,
+        "label": "actors",
+        "name": "actors",
+        "options": [],
+        "query": "with movie_characters as  (\n\tselect actor_id, character\n\tfrom \n\tactor_characters ac\n\tinner join movies m\n\ton ac.movie_id = m.id \n\tand title = '$movie'\n)\nselect name\nfrom movie_characters mc\ninner join actors a\non mc.actor_id = a.id\norder by id",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "definition": "with movie_characters as  (\n\tselect actor_id, character\n\tfrom \n\tactor_characters ac\n\tinner join movies m\n\ton ac.movie_id = m.id \n\tand title = '$movie'\n)\nselect CONCAT('https://image.tmdb.org/t/p/w500/', profile_path)\nfrom movie_characters mc\ninner join actors a\non mc.actor_id = a.id\norder by id",
+        "hide": 2,
+        "includeAll": true,
+        "label": "actor_images",
+        "name": "actor_images",
+        "options": [],
+        "query": "with movie_characters as  (\n\tselect actor_id, character\n\tfrom \n\tactor_characters ac\n\tinner join movies m\n\ton ac.movie_id = m.id \n\tand title = '$movie'\n)\nselect CONCAT('https://image.tmdb.org/t/p/w500/', profile_path)\nfrom movie_characters mc\ninner join actors a\non mc.actor_id = a.id\norder by id",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "definition": "with movie_characters as  (\n\tselect actor_id, character\n\tfrom \n\tactor_characters ac\n\tinner join movies m\n\ton ac.movie_id = m.id \n\tand title = '$movie'\n)\nselect character\nfrom movie_characters mc\ninner join actors a\non mc.actor_id = a.id\norder by id",
+        "hide": 2,
+        "includeAll": true,
+        "label": "characters",
+        "name": "characters",
+        "options": [],
+        "query": "with movie_characters as  (\n\tselect actor_id, character\n\tfrom \n\tactor_characters ac\n\tinner join movies m\n\ton ac.movie_id = m.id \n\tand title = '$movie'\n)\nselect character\nfrom movie_characters mc\ninner join actors a\non mc.actor_id = a.id\norder by id",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "5.8",
+          "value": "5.8"
+        },
+        "definition": "select imdbrating from movies\nwhere title = '$movie'",
+        "description": "",
+        "hide": 2,
+        "label": "imdbRating",
+        "name": "imdbRating",
+        "options": [],
+        "query": "select imdbrating from movies\nwhere title = '$movie'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "189000",
+          "value": "189000"
+        },
+        "definition": "select imdbratingcount from movies\nwhere title = '$movie'",
+        "hide": 2,
+        "label": "imdbRatingCount",
+        "name": "imdbRatingCount",
+        "options": [],
+        "query": "select imdbratingcount from movies\nwhere title = '$movie'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Individual Movie",
+  "uid": "beaagtqqslxc0b",
+  "version": 41,
+  "weekStart": ""
+}

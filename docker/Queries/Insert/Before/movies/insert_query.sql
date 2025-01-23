@@ -1,4 +1,4 @@
-insert into movies (id, adult , title, original_title, release_date, imdbid, backdrop_path, budget, original_language, overview, popularity, poster_path, revenue, runtime, tagline)
+insert into movies (id, adult , title, original_title, release_date, imdbid, backdrop_path, budget, original_language, overview, popularity, poster_path, revenue, runtime, tagline, imdbRating, imdbRatingCount)
 select
 	cast(id as INT),
 	cast(adult as Boolean),
@@ -14,7 +14,9 @@ select
 	posterpath,
 	cast(revenue as INT),
 	cast(runtime as INT),
-	tagline
+	tagline,
+	cast(imdbrating as DECIMAL),
+	cast(imdbratingcount as INT)
 from raw_details_metadata
 where cast(id as integer) in
 (select movie_id from updated_data
